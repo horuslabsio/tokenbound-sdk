@@ -1,15 +1,17 @@
-import { AccountInterface, Contract, RpcProvider } from "starknet"
+import { AccountInterface, Contract, num } from "starknet"
 import { accountClient } from "./utils/account"
-import { TokenboundClientOptions } from "./types/TokenboundClient"
+import { GetAccountOptions, TokenboundClientOptions } from "./types/TokenboundClient"
+import { getProvider } from "./utils/provider"
+import { WalletClient } from "./types/walletClient"
 
-import TBAcontractAbi from "@/abis/registry.abi.json"
-import { TBAMainnetRegistry, TBAMainnetImplementation, TBATestnetRegistry, TBATestnetImplementation } from "./constants/constants"
+import registryAbi from "@/abis/registry.abi.json"
 
 class TokenboundClient {
     private chainId: string
     private account: AccountInterface
-    private registryAddress?: string
-    private implementationAddress?: string
+    private walletClient: WalletClient
+    private registryAddress: string
+    private implementationAddress: string
     public isInitialized: boolean = false
 
     constructor(options: TokenboundClientOptions) {
@@ -24,17 +26,27 @@ class TokenboundClient {
 
         this.chainId = chainId
         this.account = accountClient(walletClient)
-        if(chainId == "SN_MAIN") {
-            this.registryAddress = TBAMainnetRegistry
-            this.implementationAddress = TBAMainnetImplementation
+        this.walletClient = walletClient
+        this.registryAddress = registryAddress
+        this.implementationAddress = implementationAddress
+    }
+
+    public async getAccount(params: GetAccountOptions) {
+        const { tokenContract, tokenId, salt } = params
+        const provider = getProvider(this.walletClient.jsonRPC)
+        const contract = new Contract(registryAbi, this.registryAddress, provider)
+
+        try{
+            const accountAddress = await contract.get_account(
+                this.implementationAddress,
+                tokenContract,
+                tokenId,
+                salt
+            )
+            return(num.toHex(accountAddress))
         }
-        else if(chainId == "SN_SEPOLIA") {
-            this.registryAddress = TBATestnetRegistry
-            this.implementationAddress = TBATestnetImplementation
-        }
-        else {
-            this.registryAddress = registryAddress
-            this.implementationAddress = implementationAddress
+        catch(error) {
+            throw error
         }
     }
 }
