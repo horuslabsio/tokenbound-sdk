@@ -1,12 +1,13 @@
 import { AccountInterface, Contract, num, BigNumberish } from "starknet"
 import { accountClient } from "./utils/account"
-import { AccountStatus, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions } from "./types/TokenboundClient"
+import { CreateAccountOptions, GetAccountOptions, TokenboundClientOptions } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
 import { WalletClient } from "./types/walletClient"
 
 import registryAbi from "@/abis/registry.abi.json"
+import accountAbi from "@/abis/account.abi.json"
 
-class TokenboundClient {
+export class TokenboundClient {
     private account: AccountInterface
     private walletClient: WalletClient
     private registryAddress: string
@@ -91,4 +92,5 @@ class TokenboundClient {
     }
 }
 
-// pending methods (checkAccountDeployment, execute, isValidSigner, isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)
+
+// pending methods (execute, isValidSigner, isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)
