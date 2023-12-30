@@ -92,5 +92,6 @@ export class TokenboundClient {
     }
 }
 
-
+// TODO: checkDeployment status should return false if error
+// TODO: add option to use account/signer
 // pending methods (execute, isValidSigner, isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)

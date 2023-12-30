@@ -1,6 +1,6 @@
 {
   "name": "starknet-tokenbound-sdk",
-  "version": "0.1.0",
+  "version": "0.1.10",
   "description": "SDK for starknet tokenbound accounts",
   "git repository": "https://github.com/Starknet-Africa-Edu/TBA-SDK",
   "author": "Darlington Nnam, Ademola Kelvin",
@@ -13,8 +13,8 @@
   "module": "./dist/starknet-tokenbound-sdk.js",
   "exports": {
     ".": {
-      "import": "./dist/tokenbound-sdk.js",
-      "require": "./dist/tokenbound-sdk.umd.cjs",
+      "import": "./dist/starknet-tokenbound-sdk.js",
+      "require": "./dist/starknet-tokenbound-sdk.umd.cjs",
       "types": "./dist/index.d.ts"
     }
   },
