@@ -1,6 +1,6 @@
 import { AccountInterface, Contract, BigNumberish, CallData } from "starknet"
 import { accountClient } from "./utils/account"
-import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions } from "./types/TokenboundClient"
+import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
 
 import registryAbi from "./abis/registry.abi.json"
@@ -128,7 +128,7 @@ export class TokenboundClient {
         const contract = new Contract(accountAbi, tbaAddress, this.account)
 
         try {
-            let { lock_status, time_until_unlocks } = contract.is_locked()
+            let { lock_status, time_until_unlocks } = await contract.is_locked()
             return { locked: lock_status, time_until_unlocks}
         }
         catch (error) {
@@ -136,7 +136,30 @@ export class TokenboundClient {
         }
     }
 
+    public async getOwner(options: GetOwnerOptions) {
+        let { tbaAddress, tokenContract, tokenId } = options
+        const contract = new Contract(accountAbi, tbaAddress, this.account)
+
+        try {
+            let owner = await contract.owner(tokenContract, tokenId)
+            return owner
+        }
+        catch (error) {
+            throw error
+        }
+    }
     
+    public async getOwnerNFT(tbaAddress: string) {
+        const contract = new Contract(accountAbi, tbaAddress, this.account)
+
+        try {
+            let ownerNFT = await contract.token()
+            return ownerNFT
+        }
+        catch (error) {
+            throw error
+        }
+    }
 }
 
-// pending methods (isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)
+// pending methods (transferERC20, transferNFT, signMessage)

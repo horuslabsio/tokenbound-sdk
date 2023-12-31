@@ -41,3 +41,9 @@ export interface LockStatus {
     locked: boolean
     time_until_unlocks: number
 }
+
+export interface GetOwnerOptions {
+    tbaAddress: string
+    tokenContract: string
+    tokenId: string
+}
