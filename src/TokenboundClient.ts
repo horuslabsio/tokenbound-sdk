@@ -1,6 +1,6 @@
 import { AccountInterface, Contract, BigNumberish, CallData } from "starknet"
 import { accountClient } from "./utils/account"
-import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions } from "./types/TokenboundClient"
+import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions, ERC20TransferOptions, NFTTransferOptions } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
 
 import registryAbi from "./abis/registry.abi.json"
@@ -105,6 +105,7 @@ export class TokenboundClient {
                 })
             })
             await provider.waitForTransaction(result.transaction_hash)
+            return true
         }
         catch (error) {
             throw error
@@ -129,7 +130,7 @@ export class TokenboundClient {
 
         try {
             let { lock_status, time_until_unlocks } = await contract.is_locked()
-            return { locked: lock_status, time_until_unlocks}
+            return { lock_status, time_until_unlocks}
         }
         catch (error) {
             throw error
@@ -160,6 +161,40 @@ export class TokenboundClient {
             throw error
         }
     }
+
+    public async transferERC20(options: ERC20TransferOptions) {
+        const { contractAddress, recipient, amount} = options
+
+        let call: Call = {
+            to: contractAddress,
+            selector: 'transfer',
+            calldata: [recipient, amount]
+        }
+
+        try {
+            return await this.execute(call)
+        }
+        catch (error) {
+            throw error
+        }
+    }
+
+    public async transferNFT(options: NFTTransferOptions) {
+        const { contractAddress, tokenId, sender, recipient} = options
+
+        let call: Call = {
+            to: contractAddress,
+            selector: 'transferFrom',
+            calldata: [sender, recipient, tokenId]
+        }
+
+        try {
+            return await this.execute(call)
+        }
+        catch (error) {
+            throw error
+        }
+    }
 }
 
-// pending methods (transferERC20, transferNFT, signMessage)
+// pending methods (executeMulticall, signMessage)

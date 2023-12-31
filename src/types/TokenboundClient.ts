@@ -47,3 +47,16 @@ export interface GetOwnerOptions {
     tokenContract: string
     tokenId: string
 }
+
+export interface ERC20TransferOptions {
+    contractAddress: string,
+    recipient: string,
+    amount: string
+}
+
+export interface NFTTransferOptions {
+    contractAddress: string
+    tokenId: string
+    sender: string
+    recipient: string
+}
