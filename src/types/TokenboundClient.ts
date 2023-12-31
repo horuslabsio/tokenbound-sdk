@@ -1,7 +1,10 @@
+import { AccountInterface } from "starknet";
 import { WalletClient } from "./walletClient";
 
 export interface TokenboundClientOptions {
-    walletClient: WalletClient
+    walletClient?: WalletClient
+    account?: AccountInterface
+    jsonRPC: string
     registryAddress: string
     implementationAddress: string
 }
@@ -21,4 +24,39 @@ export interface CreateAccountOptions {
 export interface AccountStatus {
     deployed: boolean
     classHash: string
+}
+
+export interface Call {
+    to: string
+    selector: string
+    calldata?: string[]
+}
+
+export interface LockOptions {
+    tbaAddress: string
+    duration_in_sec: number
+}
+
+export interface LockStatus {
+    locked: boolean
+    time_until_unlocks: number
+}
+
+export interface GetOwnerOptions {
+    tbaAddress: string
+    tokenContract: string
+    tokenId: string
+}
+
+export interface ERC20TransferOptions {
+    contractAddress: string,
+    recipient: string,
+    amount: string
+}
+
+export interface NFTTransferOptions {
+    contractAddress: string
+    tokenId: string
+    sender: string
+    recipient: string
 }
