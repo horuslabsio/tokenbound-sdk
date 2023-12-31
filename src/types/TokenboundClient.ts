@@ -34,5 +34,10 @@ export interface Call {
 
 export interface LockOptions {
     tbaAddress: string
-    duration: number
+    duration_in_sec: number
+}
+
+export interface LockStatus {
+    locked: boolean
+    time_until_unlocks: number
 }

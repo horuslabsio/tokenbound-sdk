@@ -41,7 +41,7 @@ export class TokenboundClient {
             )
             return address
         }
-        catch(error) {
+        catch (error) {
             throw error
         }
     }
@@ -65,7 +65,7 @@ export class TokenboundClient {
                 salt: salt_arg
             })
         }
-        catch(error) {
+        catch (error) {
             throw error
         }
     }
@@ -106,11 +106,37 @@ export class TokenboundClient {
             })
             await provider.waitForTransaction(result.transaction_hash)
         }
-        catch(error) {
+        catch (error) {
             throw error
         }
     }
 
+    public async lock(option: LockOptions) {
+        const { tbaAddress, duration_in_sec } = option
+        const contract = new Contract(accountAbi, tbaAddress, this.account)
+
+        try {
+            await contract.lock(duration_in_sec)
+        }
+        catch (error) {
+            throw error
+        }
+    }
+
+    public async is_locked(option: LockOptions) {
+        const { tbaAddress } = option
+        const contract = new Contract(accountAbi, tbaAddress, this.account)
+
+        try {
+            let { lock_status, time_until_unlocks } = contract.is_locked()
+            return { locked: lock_status, time_until_unlocks}
+        }
+        catch (error) {
+            throw error
+        }
+    }
+
+    
 }
 
 // pending methods (isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)
