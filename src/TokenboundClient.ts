@@ -1,35 +1,35 @@
-import { AccountInterface, Contract, BigNumberish } from "starknet"
+import { AccountInterface, Contract, BigNumberish, CallData } from "starknet"
 import { accountClient } from "./utils/account"
-import { CreateAccountOptions, GetAccountOptions, TokenboundClientOptions } from "./types/TokenboundClient"
+import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
-import { WalletClient } from "./types/walletClient"
 
 import registryAbi from "./abis/registry.abi.json"
-// import accountAbi from "./abis/account.abi.json"
+import accountAbi from "./abis/account.abi.json"
 
 export class TokenboundClient {
     private account: AccountInterface
-    private walletClient: WalletClient
+    private jsonRPC: string
     private registryAddress: string
     private implementationAddress: string
     public isInitialized: boolean = false
 
     constructor(options: TokenboundClientOptions) {
-        const { walletClient, registryAddress, implementationAddress} = options
+        const { walletClient, account, jsonRPC, registryAddress, implementationAddress} = options
         
-        if(!walletClient) {
-            throw new Error('walletClient is required!')
+        if(account && walletClient) {
+            throw new Error('only one of `account` or `walletClient` is required!')
         }
 
-        this.account = accountClient(walletClient)
-        this.walletClient = walletClient
+        account ? this.account = account : this.account = accountClient(jsonRPC, walletClient)
+
+        this.jsonRPC = jsonRPC
         this.registryAddress = registryAddress
         this.implementationAddress = implementationAddress
     }
 
     public async getAccount(params: GetAccountOptions) {
         const { tokenContract, tokenId, salt } = params
-        const provider = getProvider(this.walletClient.jsonRPC)
+        const provider = getProvider(this.jsonRPC)
         const contract = new Contract(registryAbi, this.registryAddress, provider)
 
         try{
@@ -37,7 +37,7 @@ export class TokenboundClient {
                 this.implementationAddress,
                 tokenContract,
                 tokenId,
-                salt
+                salt ? salt : tokenId
             )
             return address
         }
@@ -50,20 +50,20 @@ export class TokenboundClient {
         const { tokenContract, tokenId, salt } = params
         const contract = new Contract(registryAbi, this.registryAddress, this.account)
 
+        let salt_arg = salt ? salt : tokenId
         try {
             await contract.create_account(
                 this.implementationAddress,
                 tokenContract,
                 tokenId,
-                salt ? salt : tokenId
+                salt_arg
             )
 
-            let getAccountParams: GetAccountOptions = {
+            return await this.getAccount({
                 tokenContract,
                 tokenId,
-                salt
-            }
-            return await this.getAccount(getAccountParams)
+                salt: salt_arg
+            })
         }
         catch(error) {
             throw error
@@ -72,13 +72,14 @@ export class TokenboundClient {
 
     public async checkAccountDeployment(params: GetAccountOptions) {
         const { tokenContract, tokenId, salt } = params
-        const provider = getProvider(this.walletClient.jsonRPC)
-        let getAccountParams: GetAccountOptions = {
+        const provider = getProvider(this.jsonRPC)
+
+        let salt_arg = salt ? salt : tokenId
+        let address = await this.getAccount({
             tokenContract,
             tokenId,
-            salt
-        }
-        let address = await this.getAccount(getAccountParams)
+            salt: salt_arg
+        })
 
         try {
             const classHash = await provider.getClassHashAt(address)
@@ -87,11 +88,29 @@ export class TokenboundClient {
             }
         }
         catch (error) {
+            return { deployed: false, classHash: ''}
+        }
+    }
+
+    public async execute(call: Call) {
+        const { to, selector, calldata } = call
+        const provider = getProvider(this.jsonRPC)
+
+        try {
+            const result = await this.account.execute({
+                contractAddress: to,
+                entrypoint: selector,
+                calldata: CallData.compile({
+                    ...calldata
+                })
+            })
+            await provider.waitForTransaction(result.transaction_hash)
+        }
+        catch(error) {
             throw error
         }
     }
+
 }
 
-// TODO: checkDeployment status should return false if error
-// TODO: add option to use account/signer
-// pending methods (execute, isValidSigner, isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)
+// pending methods (isLocked, getOwnerNFT, transferETH, transferERC20, transferNFT, signMessage)
