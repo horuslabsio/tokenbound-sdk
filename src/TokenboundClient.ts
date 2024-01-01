@@ -124,8 +124,7 @@ export class TokenboundClient {
         }
     }
 
-    public async is_locked(option: LockOptions) {
-        const { tbaAddress } = option
+    public async is_locked(tbaAddress: string) {
         const contract = new Contract(accountAbi, tbaAddress, this.account)
 
         try {
