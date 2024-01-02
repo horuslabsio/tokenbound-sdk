@@ -1,70 +1,507 @@
-# Getting Started with Create React App
+# Tokenbound SDK
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repo houses the Tokenbound SDK, a front-end library for interacting with ERC-6551 accounts on Starknet. The SDK provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing. Any onchain action you can perform with your EOA wallet can be done with your NFT's Tokenbound account.
 
-## Available Scripts
+Packages
+src - SDK client for all projects, signing enabled via Starknet.js.
+Examples
+examples/vite-wagmi-viem - An example app using the tokenbound SDK in a vite project with wagmi
 
-In the project directory, you can run:
+Development
+Clone repository and install dependencies:
+# clone the repo
+$ git clone <repo>
+# install dependencies
+$ pnpm install
+# build packages
+$ pnpm --filter "@tokenbound/*" build
+NOTE: Any local changes to SDK methods in TokenboundClient.ts require a rebuild to be useable in the example apps in /example
 
-### `npm start`
+Install Anvil to run a local Ethereum node.
+Configure environment variables. See .env.example for instructions
+Run dev server: pnpm dev
+Unit/integration tests
+Tests are using Vitest, and can be performed via multiple pipelines:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Unit tests spin up a local Anvil instance using viem/anvil and transact against a local fork of mainnet.
+Integration tests are rendered with a custom render function from React Testing Library that integrates with Anvil. See usage of renderWithWagmiConfig in packages/sdk/src/tests.
+Both pipelines use wagmi's Ethers adaptors to convert the viem walletClient to Ethers 5 and Ethers 6 signers so the entire test suite is run against all 3 implementations.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+These tests require a local Anvil node so test transactions can be run against a mainnet fork.
 
-### `npm test`
+Thanks to @tmm for sharing testing-wagmi for reference.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Run Tests
+Set up environment variables in .env.test
+# VITE_ prefix is required for Vite to pick up the env vars
 
-### `npm run build`
+# PRIVATE KEYS CAN GO HERE
+VITE_PRIVATE_ALCHEMY_API_KEY=REPLACE_WITH_YOUR_ALCHEMY_API_KEY
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# PUBLIC ENV VARS, add to `.env`:
+VITE_ANVIL_MAINNET_FORK_ENDPOINT=https://eth-mainnet.alchemyapi.io/v2/$VITE_PRIVATE_ALCHEMY_API_KEY
+VITE_ANVIL_MAINNET_FORK_BLOCK_NUMBER=17680029
+Spin up an Anvil instance and start Vitest from the SDK root:
+pnpm test
+All unit tests will be executed.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Pre-commit Hooks
+Husky has been configured to run a pre-commit hook to ensure tests pass.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+API Reference
+TokenboundClient
+The TokenboundClient class provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing.
 
-### `npm run eject`
+The client is instantiated with an object containing two parameters:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Parameter	
+One of signer or walletClient	mandatory
+One of chainId or chain	mandatory
+Use either a viem walletClient (see walletClient docs) or an Ethers signer (see signer docs) for transactions that require a user to sign. Note that viem is an SDK dependency, so walletClient is preferable for most use cases. Use of Ethers signer is recommended only for legacy projects.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The TokenboundClient is configured to use the Version 3.1 ERC-6551 contract deployments → by default.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+For instructions about using a Custom Account Implementation and/or a Legacy V2 Tokenbound Account Implementation, see the Advanced Usage section at the bottom of this document.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Standard configuration
+If you're using one of the standard V2/V3 ERC-6551 contract deployments →, you can simply pass thechainId. This will set Chain internally using imports from viem/chains. To keep the bundle size to a minimum, only standard chains are included in the SDK package.
 
-## Learn More
+import { useAccount, WalletClient } from 'wagmi'
+import { TokenboundClient } from '@tokenbound/sdk'
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+const { address } = useAccount()
+const walletClient: WalletClient = createWalletClient({
+  chainId: goerli,
+  account: address,
+  transport: http(),
+})
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+const tokenboundClient = new TokenboundClient({ walletClient, chainId: 5 })
+Custom chain
+If your chain isn't listed on the deployments page →, you'll need to pass the full Chain object from the viem/chains package using the chain parameter.
 
-### Code Splitting
+import { zora } from 'viem/chains'
+const tokenboundClient = new TokenboundClient({ walletClient, chain: zora })
+Using Ethers.js
+Ethers 5 / 6 are supported as an alternative to viem.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+const { data: signer } = useSigner()
+const tokenboundClient = new TokenboundClient({ signer, chainId: 1 })
+Making your first call
+Now you can use the TokenboundClient to interact with the Tokenbound contracts:
 
-### Analyzing the Bundle Size
+const tokenboundClient = new TokenboundClient({ walletClient, chainId: 1 })
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+const tokenboundAccount = tokenboundClient.getAccount({
+  tokenContract: '<token_contract_address>',
+  tokenId: '<token_id>',
+})
 
-### Making a Progressive Web App
+console.log(tokenboundAccount) //0x1a2...3b4cd
+For easy reference, we've prepared code examples for a few simple SDK interactions.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+TokenboundClient SDK Methods
+The TokenboundClient enables creation of and interaction with Tokenbound accounts:
 
-### Advanced Configuration
+prepareCreateAccount
+Prepares an account creation transaction to be submitted via sendTransaction
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Returns a promise resolving to a prepared transaction that can be used to create a Tokenbound account for a given token contract and token ID.
 
-### Deployment
+When using the standard V3 implementation, this will be a MultiCallTx that will create and initialize the account in one pass. If using a custom account implementation with V3, a basic prepared transaction will be returned in the form {to, value, data}, and the created account will need to be initialized in a second step.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+If using the legacy V2 implementation, the return will be a standard object of the form {to, value, data}, and account initialization is handled for you.
 
-### `npm run build` fails to minify
+const preparedAccount = await tokenboundClient.prepareCreateAccount({
+  tokenContract: '<token_contract_address>',
+  tokenId: '<token_id>',
+})
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+console.log(preparedAccount) //0x1a2...3b4cd
+Parameter	Description	Type
+tokenContract	The address of the token contract.	string
+tokenId	The token ID.	string
+salt	The salt used to create a unique account address (optional)	number
+chainId	The id of the chain on which the account will exist (optional)	number
+appendedCalls	An array of calls to execute via Multicall3 (optional)	Call3[]
+See Appending Calls To Account Creation for appendedCalls documentation.
+
+createAccount
+Creates a tokenbound account for an NFT. The deterministic address is calculated using the create2 opcode using the listed parameters along with chainId and implementation address. createAccount adds the account to the registry and initializes it for use. Prior to account creation, the address can already receive assets. Deploying the account allows the NFT's owner to interact with the account.
+
+Returns an object containing the account address of the tokenbound account created and the hash of the transaction. If an account already exists, the existing account is returned.
+
+const { account, txHash } = await tokenboundClient.createAccount({
+  tokenContract: '<token_contract_address>',
+  tokenId: '<token_id>',
+})
+
+console.log(account) //0x1a2...3b4cd
+Parameter	Description	Type
+tokenContract	The address of the token contract.	string
+tokenId	The token ID.	string
+salt	The salt used to create a unique account address (optional)	number
+chainId	The id of the chain on which the account will exist (optional)	number
+appendedCalls	An array of calls to execute via Multicall3 (optional)	Call3[]
+See Appending Calls To Account Creation for appendedCalls documentation.
+
+getAccount
+Gets the tokenbound account address for an NFT.
+
+Returns the tokenbound account address for a given token contract and token ID.
+
+const tokenboundAccount = tokenboundClient.getAccount({
+  tokenContract: '<token_contract_address>',
+  tokenId: '<token_id>',
+})
+
+console.log(tokenboundAccount) //0x1a2...3b4cd
+Parameter	Description	Type
+tokenContract	The address of the token contract.	string
+tokenId	The token ID.	string
+salt	The salt used when the account was created (optional)	number
+checkAccountDeployment
+Check if the tokenbound account address has been activated using createAccount.
+
+Returns a boolean indicating if a tokenbound account has been deployed (created) at the accountAddress
+
+const SAPIENZ_GOERLI_TOKEN_TBA_TOKENID_0 =
+  '0x33D622b211C399912eC0feaaf1caFD01AFA53980' as `0x${string}`
+
+const isAccountDeployed = await tokenboundClient.checkAccountDeployment({
+  accountAddress: SAPIENZ_GOERLI_TOKEN_TBA_TOKENID_0,
+})
+
+console.log('IS SAPIENZ 0 DEPLOYED?', isAccountDeployed) //...
+Parameter	Description	Type
+accountAddress	The Tokenbound account address.	string
+getNFT
+Extracts information about the origin NFT that is paired with the tokenbound account.
+
+Returns a Promise that resolves to a TokenboundAccountNFT object. The TokenboundAccountNFT object contains the following properties:
+
+tokenContract: The token contract address
+tokenId: The token ID
+chainId: The chain ID
+const nft = await tokenboundClient.getNFT({
+  accountAddress: '<account_address>',
+})
+
+const { tokenContract, tokenId, chainId } = nft
+
+console.log({ tokenContract, tokenId, chainId })
+Parameter	Description	Type
+accountAddress	The Tokenbound account address.	string
+prepareExecution
+Prepares an arbitrary contract call for execution against any contract.
+
+Note: this method replaces the deprecated V2 method prepareExecuteCall.
+
+Returns A Promise with prepared transaction to execute a call on a Tokenbound account. Can be sent via sendTransaction on an Ethers signer or via WalletClient.
+
+const preparedExecution = await tokenboundClient.prepareExecution({
+  account: '<account_address>',
+  to: '<contract_address>',
+  value: '<wei_value>',
+  data: '<encoded_call_data>',
+})
+
+console.log(preparedExecution) //...
+Parameter	Description	Type
+account	The Tokenbound account address.	string
+to	The contract address.	string
+value	The value to send, in wei.	bigint
+data	The ABI-encoded call data (optional)	string
+execute
+Performs an arbitrary contract call against any contract. This means any onchain action you can perform with your EOA wallet can be done with your NFT's Tokenbound account. You can mint or transfer NFTs, approve contracts, make and vote on DAO proposals, and much more.
+
+Note: this method replaces the deprecated V2 method executeCall.
+
+Returns a hash of the transaction that executed a call using a Tokenbound account.
+
+const executedCall = await tokenboundClient.execute({
+  account: '<account_address>',
+  to: '<contract_address>',
+  value: '<wei_value>',
+  data: '<encoded_call_data>',
+})
+
+console.log(executedCall)
+Parameter	Description	Type
+account	The Tokenbound account address.	string
+to	The contract address.	string
+value	The value to send, in wei.	bigint
+data (optional)	The ABI-encoded call data.	0x{string}
+Here's a more robust example, where we see how to use your TBA to mint an NFT using Zora's ERC721Drop contract by calling the contract's purchase function.
+
+// Webb's First Deep Field (unlimited mint drop):
+// https://zora.co/collect/eth:0x28ee638f2fcb66b4106acab7efd225aeb2bd7e8d
+
+const zora721 = {
+  abi: zora721DropABI,
+  proxyContractAddress: getAddress('0x28ee638f2fcb66b4106acab7efd225aeb2bd7e8d'),
+  mintPrice: BigInt(0),
+  quantity: 2,
+  tbaAddress: getAddress('0xc33f0A7FcD69Ba00b4e980463199CD38E30d0E5c'),
+}
+
+const encodedMintFunctionData = encodeFunctionData({
+  abi: zora721.abi,
+  functionName: 'purchase',
+  args: [BigInt(zora721.quantity)],
+})
+
+const mintToTBATxHash = await tokenboundClient.execute({
+  account: zora721.tbaAddress,
+  to: zora721.proxyContractAddress,
+  value: zora721.mintPrice * BigInt(zora721.quantity),
+  data: encodedMintFunctionData,
+})
+isValidSigner
+Checks if a tokenbound account has signing authorization. This determines whether the active WalletClient or Signer can be used to sign transactions on behalf of the TBA.
+
+Returns a Promise that resolves to true if the account is a valid signer, otherwise false
+
+NOTE: This method is not available to V2-based implementations
+
+const isValidSigner = await tokenboundClient.isValidSigner({
+  account: ZORA721_TBA_ADDRESS,
+})
+
+console.log('isValidSigner?', isValidSigner)
+Parameter	Description	Type
+account	The Tokenbound account address.	string
+transferNFT
+Transfer an NFT to a recipient from a Tokenbound account
+
+Returns a Promise that resolves to the transaction hash of the transfer
+
+const transferNFT = await tokenboundClient.transferNFT({
+  account: '<account_address>',
+  tokenType: 'ERC721',
+  tokenContract: '<nft_contract_address>',
+  tokenId: '<nft_token_id>',
+  recipientAddress: '<recipient_address>',
+})
+
+console.log(transferNFT) //...
+Parameter	Description	Type
+account	The Tokenbound account address.	string
+tokenType	Token type: 'ERC721' or 'ERC1155'	string
+tokenContract	The address of the token contract.	string
+tokenId	The tokenId of the NFT.	string
+recipientAddress	The recipient address or ENS.	string
+amount	The number of tokens to send (1155 only).	number
+transferETH
+Transfer ETH to a recipient from a Tokenbound account
+
+Returns a Promise that resolves to the transaction hash of the transfer
+
+const transferETH = await tokenboundClient.transferETH({
+  account: '<tokenbound_account_address>',
+  amount: 0.01,
+  recipientAddress: '<recipient_address>',
+})
+
+console.log(transferERC20) //...
+Parameter	Description	Type
+account	The Tokenbound account address.	string
+amount	Amount, in decimal form (eg. 0.01 ETH).	number
+recipientAddress	The recipient address or ENS.	string
+transferERC20
+Transfer ERC-20 tokens to a recipient from a Tokenbound account
+
+Returns a Promise that resolves to the transaction hash of the transfer
+
+const transferERC20 = await tokenboundClient.transferERC20({
+  account: '<tokenbound_account_address>',
+  amount: 0.1,
+  recipientAddress: '<recipient_address>',
+  erc20tokenAddress: '<erc20_token_address>',
+  erc20tokenDecimals: '<erc20_token_decimals>',
+})
+
+console.log(transferERC20) //...
+Parameter	Description	Type
+account	The Tokenbound account address.	string
+amount	Amount, in decimal form (eg. 0.1 USDC).	number
+recipientAddress	The recipient address or ENS.	string
+erc20tokenAddress	The ERC-20 token address.	string
+erc20tokenDecimals	The ERC-20 token decimal specification (1-18).	number
+deconstructBytecode
+Deconstructs the bytecode of a Tokenbound account into its constituent parts.
+
+Returns a Promise that resolves to a SegmentedERC6551Bytecode object, or null if the account is not deployed. The SegmentedERC6551Bytecode object contains the following properties:
+
+erc1167Header: ERC-1167 Header
+implementationAddress: The ERC-6551 implementation address
+erc1167Footer: ERC-1167 Footer
+salt: The salt value
+tokenId: The token ID
+tokenContract: The token contract address
+chainId: The chain ID
+const segmentedBytecode = await tokenboundClient.deconstructBytecode({
+  accountAddress: '<account_address>',
+})
+
+console.log(segmentedBytecode)
+Parameter	Description	Type
+accountAddress	The Tokenbound account address.	string
+signMessage
+Gets an EIP-191 formatted signature for a message.
+
+Returns a Promise that resolves to a signed Hex string
+
+The message to be signed is typed as UniversalSignableMessage so that it can elegantly handle Ethers 5, Ethers 6, and viem's expected types for all signable formats. Check the types associated with signMessage for viem, Ethers 5, and Ethers 6 as needed.
+
+// Ethers 5
+const arrayMessage: ArrayLike<number> = [72, 101, 108, 108, 111] // "Hello" in ASCII
+
+// Ethers 5 or Ethers 6
+const uint8ArrayMessage: Uint8Array = new Uint8Array([72, 101, 108, 108, 111]) // "Hello" in ASCII
+Note that this method is just for convenience. Since your EOA wallet is responsible for signing, messages can also be signed explicitly using your EOA wallet address in viem or Ethers.
+
+const signedMessage = await tokenboundClient.signMessage({
+  message: 'Ice cream so good',
+})
+
+console.log(signedMessage)
+
+// Works in Ethers 5 or 6, throws in viem
+const signedUint8Message = await tokenboundClient.signMessage({
+  message: uint8ArrayMessage,
+})
+
+console.log(signedUint8Message)
+
+// Works in viem
+const signedRawUint8Message = await tokenboundClient.signMessage({
+  message: { raw: uint8ArrayMessage },
+})
+
+console.log(signedUint8Message)
+Parameter	Description	Type
+message	The message to be signed.	UniversalSignableMessage
+Advanced Usage
+Custom Account Implementation
+If your team has deployed a custom account implementation contract, you'll need to point the SDK to your custom implementation instead of the default implementation.
+
+If your custom implementation uses the legacy V2 account logic, you'll also need to supply a version parameter to instruct the TokenboundClient to make use of the V2 methods.
+
+import { TokenboundClient } from '@tokenbound/sdk'
+
+const tokenboundClient = new TokenboundClient({
+  walletClient: '<walletClient>',
+  chainId: '<chainId>',
+  implementationAddress: '<custom_implementation_address>',
+})
+
+// Custom implementation AND custom registry (uncommon for most implementations)
+const tokenboundClientWithCustomRegistry = new TokenboundClient({
+  walletClient: '<walletClient>',
+  chainId: '<chainId>',
+  implementationAddress: '<custom_implementation_address>',
+  registryAddress: '<custom_registry_address>',
+})
+Legacy V2 Tokenbound Account Implementation
+If your application was created using the standard legacy V2 account implementation (see 0.2.0 →), you'll need to instruct the TokenboundClient to use it by specifying the TBVersion
+
+import { TokenboundClient, TBVersion } from '@tokenbound/sdk'
+const tokenboundClient = new TokenboundClient({
+  walletClient,
+  chainId: 1,
+  version: TBVersion.V2,
+})
+Appending Calls To Account Creation
+You can make your first transaction using a newly-created TBA by appending a call to createAccount's internal multicall sequence for execution after the account creation and initialization steps. To determine your account address before it has been created, use the getAccount method. You can then use the account as the Call3 target.
+
+The Tokenbound SDK uses a fork of Multicall3 with support for authenticated calls. The value of msg.sender is appended to the calldata of each call in the style of ERC-2771, allowing contract recipients to verify the multicall sender.
+
+See the Multicall3 docs for detailed info regarding this approach. Pay special attention to the notices re: contract writes.
+
+Here's an example that uses your just-deployed token bound account to make a transaction.
+
+import { Call3 } from '@tokenbound/sdk'
+import { encodeFunctionData } from 'viem'
+
+const tokenboundAccount = tokenboundClient.getAccount({
+  tokenContract: "<token_contract_address>",
+  tokenId: "<token_id>",
+})
+
+// Let's claim an ERC-1155 token from one of ThirdWeb's DropERC1115 contract deployments
+// https://thirdweb.com/thirdweb.eth/DropERC1155
+
+const maxClaimablePerWallet = 1
+const pricePerToken = 0
+const quantity = 1
+const currencyAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' // ETH
+
+// Configure the arguments for the claim
+const claimConfig = {
+  receivingTBA: tokenboundAccount,
+  pricePerToken,
+  quantity,
+  tokenId: 0,
+  currencyAddress,
+  allowListProof: {
+    proof: [],
+    quantityLimitPerWallet: maxClaimablePerWallet ?? 1,
+    pricePerToken,
+    currency: currencyAddress,
+  },
+  data: '0x',
+}
+
+// Encode function data for use in prepareExecution call
+const encodedClaimFunctionData = encodeFunctionData({
+  abi: rewardContractABI,
+  functionName: 'claim',
+  args: [
+    claimConfig.receivingTBA,
+    claimConfig.tokenId,
+    claimConfig.quantity,
+    claimConfig.currencyAddress,
+    claimConfig.pricePerToken,
+    claimConfig.allowListProof, 
+    claimConfig.data,
+  ],
+})
+
+// Prepare execution call via Tokenbound account
+const preparedExecution = await tokenboundClient.prepareExecution({
+  account: tokenboundAccount,
+  to: CLAIM_CONTRACT_ADDRESS,
+  value: 0n,
+  data: encodedClaimFunctionData,
+})
+
+// Assemble a Call3 call that can be used by createAccount's internal Multicall3 invocation
+const appendedCall: Call3 = {
+  target: tokenboundAccount, // <-- Execute with TBA contract
+  allowFailure: false,
+  callData: preparedExecution.data, // <-- Encoded TBA 'execute' function data
+}
+
+const { account, txHash } = await tokenboundClient.createAccount({
+  tokenContract: "<token_contract_address>",
+  tokenId: "<token_id>",
+  appendedCalls: [appendedCall] // <-- Call(s) to be executed sequentially after account creation
+})
+
+console.log(account) //0x1a2...3b4cd
+Custom PublicClient or RPC URL
+If using viem, you can specify a custom PublicClient RPC URL for use by the TokenboundClient's internal PublicClient.
+
+Alternately, you can simply configure and pass your own publicClient. This option was added to enable internal testing on local chains.
+
+Parameter	
+publicClientRPCUrl	optional
+publicClient	optional
+import { TokenboundClient } from '@tokenbound/sdk'
+
+const tokenboundClient = new TokenboundClient({
+  walletClient: '<walletClient>',
+  chainId: '<chainId>',
+  publicClientRPCUrl: '<custom_rpc_url>',
+})
