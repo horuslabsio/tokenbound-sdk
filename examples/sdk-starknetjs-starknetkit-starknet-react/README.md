@@ -1,6 +1,6 @@
-## Starknet-tokenbound-sdk + starknet.js
+## Starknet-tokenbound-sdk + starknet.js + starknetkit + starknet-react
 
-This is a simple React application that demonstrates how to use the tokenbound SDK, with Starknet.js.
+This is a simple React application that demonstrates how to use the tokenbound SDK, with Starknet.js, Starknetkit and Starknet-react.
 
 # Getting Started
 
