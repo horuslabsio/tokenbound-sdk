@@ -66,25 +66,31 @@ function App() {
 
   // execute
   const execute = async() => {
-    const call: Call = {
+    const call1: Call = {
       to: "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300",
-      selector: "increment",
+      selector: "0x7a44dde9fea32737a5cf3f9683b3235138654aa2d189f6fe44af37a61dc60d",
+      calldata: []
+    }
+    const call2: Call = {
+      to: "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300",
+      selector: "0x03a0b04fad2d45d81641f40c55ee13e701dacd4a99cbf4d6ed1e231d717b3e4e",
       calldata: []
     }
     try {
-      await tokenbound.execute(call)
+      await tokenbound.execute(account as string, [call1, call2])
     }
     catch (error) {
       console.log(error)
     }
   }
 
-  // transfer erc20 - does not work
+  // transfer erc20
   const transferERC20 = async() => {
     const ETH_CONTRACT = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
     const recipient = "0x0538C514b0eCd0cF6446a39646618e495A190A8502416f3af4dd5Ce5dA8aCf22"
     try {
       await tokenbound.transferERC20({
+        tbaAddress: account,
         contractAddress: ETH_CONTRACT,
         recipient,
         amount: "150000000000000"
@@ -117,16 +123,8 @@ function App() {
       setAccountClassHash(status?.classHash)
     }
 
-    // const getLockStatus = async() => {
-    //   const lockStatus = await tokenbound.is_locked()
-    //   console.log(lockStatus)
-    //   setLockStatus(lockStatus.lock_status)
-    //   setTimeUntilUnlocks(lockStatus.time_until_unlocks)
-    // }
-
     getAccount()
     getDeploymentStatus()
-    // getLockStatus()
   }, [tokenContract])
 
   // get account owner
@@ -147,10 +145,18 @@ function App() {
     setNftOwnerId(nftowner[1].toString())
   }
 
+  // get lock status
+  const getLockStatus = async() => {
+    const lockStatus = await tokenbound.is_locked(account as string)
+    setLockStatus(lockStatus[0])
+    setTimeUntilUnlocks(lockStatus[1].toString())
+  }
+
   // check if deploy status is true before getting owners
   if(deployStatus) {
     getAccountOwner()
     getNFTOwner()
+    getLockStatus()
   }
 
   return (
@@ -169,6 +175,8 @@ function App() {
         </a>
         <br />
         <p>Deployed: [Status: {deployStatus?.toString()}, ClassHash: {accountClassHash}]</p>
+        <br />
+        <p>Locked Status: [Status: {lockStatus?.toString()}, Time until unlocks: {timeUntilUnlocks} secs]</p>
         <br />
         <p>Account Owner: {owner}</p>
         <br />
@@ -190,4 +198,4 @@ function App() {
 
 export default App;
 
-// functions left: { is_locked, transfer_erc20, transfer_nft}
+// functions left: { transfer_erc20, transfer_nft}
