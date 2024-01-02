@@ -1,70 +1,139 @@
-# Getting Started with Create React App
+# Tokenbound SDK
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repo houses the Tokenbound SDK, a front-end library for interacting with ERC-6551 accounts on Starknet. The SDK provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing. Any onchain action you can perform with your EOA wallet can be done with your NFT's Tokenbound account.
 
-## Available Scripts
+Packages
+src - SDK client for all projects, signing enabled via Starknet.js.
 
-In the project directory, you can run:
+Examples
+examples/sdk-starknetjs - An example app using the tokenbound SDK in a react project with starknetjs
+examples/sdk-starknetjs-starknetkit-starknet-react - An example app using the tokenbound SDK in a react project with starknetjs, starknetkit and starknet-react
 
-### `npm start`
+Development
+Clone repository and install dependencies:
+# clone the repo
+$ git clone <repo>
+# install dependencies
+$ npm install
+# build packages
+$ npm run build
+NOTE: Any local changes to SDK methods in TokenboundClient.ts require a rebuild to be useable in the example apps in /example
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## API Reference
+### TokenboundClient
+The TokenboundClient class provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The client is instantiated with an object containing two parameters:
 
-### `npm test`
+#### Parameter	
+One of `account <AccountInterface>` or `walletClient <WalletClient>	mandatory`
+Use either starknetkit or a combination of starknetkit and starknet-react to use the `account` object, and use a private key imported from any wallet to create the `walletClient` object.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Standard configuration with WalletClient
+To configure tokenbound using walletClient:
 
-### `npm run build`
+```js
+import { TokenboundClient, WalletClient } from 'starknet-tokenbound-sdk';
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const walletClient: WalletClient = {
+  address: "0x0617D13Db952a2965580ebAc9DF602debFa12d0eAFB7c1a79D9dA03321169286",
+  privateKey: process.env.REACT_APP_PRIVATE_KEY!,
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+const options = {
+  walletClient: walletClient,
+  registryAddress: registryAddress,
+  implementationAddress: implementationAddress,
+  jsonRPC: `https://starknet-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+}
 
-### `npm run eject`
+const tokenbound = new TokenboundClient(options)
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Standard configuration  with Account signer
+Refer to the starknet-react documentation, for notes on configuring your StarknetProvider.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```js
+import { useAccount, useConnect } from '@starknet-react/core';
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+const options = {
+  account: account,
+  registryAddress: registryAddress,
+  implementationAddress: implementationAddress,
+  jsonRPC: `https://starknet-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
+}
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+const tokenbound = new TokenboundClient(options)
+```
 
-## Learn More
+For easy reference, we've prepared code examples for a few simple SDK interactions.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## TokenboundClient SDK Methods
+The TokenboundClient enables creation of and interaction with Tokenbound accounts:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### createAccount
+Creates a tokenbound account for an NFT. createAccount adds the account to the registry and initializes it for use. Prior to account creation, the address can already receive assets. Deploying the account allows the NFT's owner to interact with the account.
 
-### Code Splitting
+```js
+const deployAccount = async () => {
+  try {
+    await tokenbound.createAccount({
+      tokenContract: tokenContract,
+      tokenId: tokenId,
+      salt: "3000000000"
+    })
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Parameter	Description	Type
+- tokenContract: The address of the token contract.	`string`
+- tokenId: The token ID.	`string`
+- salt:	The salt used to create a unique account address (optional)	`number`
 
-### Analyzing the Bundle Size
+### getAccount
+Gets the tokenbound account address for an NFT.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Returns the tokenbound account address for a given token contract and token ID.
 
-### Making a Progressive Web App
+```js
+const getAccount = async () => {
+  const account = await tokenbound.getAccount({
+    tokenContract: tokenContract,
+    tokenId: tokenId,
+    salt: "3000000000"
+  })
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Parameter	Description	Type
+- tokenContract:	The address of the token contract.	string
+- tokenId:	The token ID.	string
+- salt:	The salt used when the account was created (optional)	number
 
-### Advanced Configuration
+### checkAccountDeployment
+Check if the tokenbound account address has been activated using createAccount.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Returns a boolean and classHash indicating if a tokenbound account has been deployed (created) at the accountAddress
 
-### Deployment
+```js
+const getDeploymentStatus = async () => {
+  const status = await tokenbound.checkAccountDeployment({
+    tokenContract,
+    tokenId,
+    salt: "3000000000"
+  })
+  setDeployStatus(status?.deployed)
+  setAccountClassHash(status?.classHash)
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Parameter	Description	Type
+- tokenContract: The token contract address
+- tokenId: The token ID
+- salt
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
