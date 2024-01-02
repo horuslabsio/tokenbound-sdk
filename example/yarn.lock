@@ -8740,10 +8740,10 @@ stackframe@^1.3.4:
   resolved "https://registry.npmjs.org/stackframe/-/stackframe-1.3.4.tgz"
   integrity sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==
 
-starknet-tokenbound-sdk@^0.1.32:
-  version "0.1.32"
-  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.1.32.tgz"
-  integrity sha512-bC2SyfRqAdKzDfdMSOjYeuFytF2GFoeeOiKul1UkaOoTEpoBaJCpXKqoGfDlQu630TQHEVZ5eWShcPN8nJu0Qg==
+starknet-tokenbound-sdk@^0.1.34:
+  version "0.1.34"
+  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.1.34.tgz"
+  integrity sha512-RU3RGRzxuovYw1aLqKP9AUSAbDDEcFsH5f/9W7qzZv9lq7rU+NnQtdUrGUUis1L0fWszGMPmhgVUDghu7QH3EQ==
   dependencies:
     "@testing-library/jest-dom" "^5.17.0"
     "@testing-library/react" "^13.4.0"

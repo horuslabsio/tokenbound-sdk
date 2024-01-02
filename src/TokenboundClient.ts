@@ -169,7 +169,10 @@ export class TokenboundClient {
         let call: Call = {
             to: contractAddress,
             selector: "0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e",
-            calldata: [recipient, cairo.uint256(amount)]
+            calldata: CallData.compile({
+                recipient, 
+                amount: cairo.uint256(amount)
+            })
         }
 
         try {
@@ -186,7 +189,11 @@ export class TokenboundClient {
         let call: Call = {
             to: contractAddress,
             selector: "0x41b033f4a31df8067c24d1e9b550a2ce75fd4a29e1147af9752174f0e6cb20",
-            calldata: [sender, recipient, cairo.uint256(tokenId)]
+            calldata: CallData.compile({
+                from_: sender, 
+                to: recipient, 
+                amount: cairo.uint256(tokenId)
+            })
         }
 
         try {

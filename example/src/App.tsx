@@ -13,7 +13,6 @@ function App() {
   const [lockStatus, setLockStatus] = useState<boolean>()
   const [timeUntilUnlocks, setTimeUntilUnlocks] = useState<number>()
 
-
   const walletClient: WalletClient = {
     address: "0x0617D13Db952a2965580ebAc9DF602debFa12d0eAFB7c1a79D9dA03321169286",
     privateKey: process.env.REACT_APP_PRIVATE_KEY!,
@@ -101,6 +100,25 @@ function App() {
     }
   }
 
+    // transfer nft
+    const transferNFT = async() => {
+      const NFT_CONTRACT = "0x042e7815d9e90b7ea53f4550f74dc12207ed6a0faaef57ba0dbf9a66f3762d82"
+      const TOKEN_ID = "68478765892699379673"
+      const recipient = "0x0617D13Db952a2965580ebAc9DF602debFa12d0eAFB7c1a79D9dA03321169286"
+      try {
+        await tokenbound.transferNFT({
+          tbaAddress: account,
+          contractAddress: NFT_CONTRACT,
+          tokenId: TOKEN_ID,
+          sender: account as string,
+          recipient
+        })
+      }
+      catch(error) {
+        console.log(error)
+      }
+    }
+
   useEffect(() => {
     // get tokenbound account
     const getAccount = async () => {
@@ -162,7 +180,7 @@ function App() {
   return (
     <div className="App">
       <section className="App-header">
-        <h2 className='my-2 text-gray-300'>Testing Token bound SDK</h2>
+        <h1 className='my-2 text-gray-300'>Testing Token bound SDK</h1>
         <p>NFT Contract: {tokenContract}</p>
         <p>Token ID: {tokenId}</p>
         <br />
@@ -188,7 +206,7 @@ function App() {
           <button disabled={lockStatus} onClick={lockAccount} className='bg-red-700 rounded-lg px-2 mr-5 py-2'>Lock Account</button>
           <button onClick={execute} className='bg-green-400 rounded-lg px-2 mr-5 py-2'>execute txn</button>
           <button onClick={transferERC20} className='bg-blue-800 rounded-lg px-2 mr-5 py-2'>send ERC20</button>
-          <button onClick={lockAccount} className='bg-yellow-500 rounded-lg px-2 py-2'>send NFT</button>
+          <button onClick={transferNFT} className='bg-yellow-500 rounded-lg px-2 py-2'>send NFT</button>
         </div> 
         <br />
       </section>
@@ -197,5 +215,3 @@ function App() {
 }
 
 export default App;
-
-// functions left: { transfer_erc20, transfer_nft}
