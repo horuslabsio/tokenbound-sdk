@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import { num } from 'starknet';
-import { TokenboundClient, WalletClient } from 'starknet-tokenbound-sdk';
+import { TokenboundClient, WalletClient, Call } from 'starknet-tokenbound-sdk';
 
 function App() {
   const [account, setAccount] = useState('')
@@ -57,6 +57,37 @@ function App() {
       await tokenbound.lock({
         tbaAddress: account as string,
         duration_in_sec: 300
+      })
+    }
+    catch(error) {
+      console.log(error)
+    }
+  }
+
+  // execute
+  const execute = async() => {
+    const call: Call = {
+      to: "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300",
+      selector: "increment",
+      calldata: []
+    }
+    try {
+      await tokenbound.execute(call)
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+  // transfer erc20 - does not work
+  const transferERC20 = async() => {
+    const ETH_CONTRACT = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
+    const recipient = "0x0538C514b0eCd0cF6446a39646618e495A190A8502416f3af4dd5Ce5dA8aCf22"
+    try {
+      await tokenbound.transferERC20({
+        contractAddress: ETH_CONTRACT,
+        recipient,
+        amount: "150000000000000"
       })
     }
     catch(error) {
@@ -143,10 +174,15 @@ function App() {
         <br />
         <p>NFT Owner: [Contract: {nftOwner}, ID: {nftOwnerId} ]</p>
         <br />
+
         <div>
-        <button disabled={deployStatus} onClick={deployAccount} className='bg-blue-400 rounded-lg px-2 mr-5 py-2'>Deploy token</button>
-        <button disabled={lockStatus} onClick={lockAccount} className='bg-red-700 rounded-lg px-2 py-2'>Lock Account</button>
+          <button disabled={deployStatus} onClick={deployAccount} className='bg-blue-400 rounded-lg px-2 mr-5 py-2'>Deploy token</button>
+          <button disabled={lockStatus} onClick={lockAccount} className='bg-red-700 rounded-lg px-2 mr-5 py-2'>Lock Account</button>
+          <button onClick={execute} className='bg-green-400 rounded-lg px-2 mr-5 py-2'>execute txn</button>
+          <button onClick={transferERC20} className='bg-blue-800 rounded-lg px-2 mr-5 py-2'>send ERC20</button>
+          <button onClick={lockAccount} className='bg-yellow-500 rounded-lg px-2 py-2'>send NFT</button>
         </div> 
+        <br />
       </section>
     </div>
   );
@@ -154,4 +190,4 @@ function App() {
 
 export default App;
 
-// functions left: { execute, is_locked, transfer_erc20, transfer_nft}
+// functions left: { is_locked, transfer_erc20, transfer_nft}

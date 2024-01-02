@@ -196,4 +196,5 @@ export class TokenboundClient {
     }
 }
 
+// TODO: execute should call `execute` on TBA, passing in the arguements
 // pending methods (executeMulticall, signMessage)
