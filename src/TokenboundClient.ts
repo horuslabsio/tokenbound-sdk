@@ -1,6 +1,6 @@
-import { AccountInterface, Contract, BigNumberish, CallData } from "starknet"
+import { AccountInterface, Contract, BigNumberish, CallData, cairo } from "starknet"
 import { accountClient } from "./utils/account"
-import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions, ERC20TransferOptions, NFTTransferOptions } from "./types/TokenboundClient"
+import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions, ERC20TransferOptions, NFTTransferOptions, MultiCall } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
 
 import registryAbi from "./abis/registry.abi.json"
@@ -92,18 +92,19 @@ export class TokenboundClient {
         }
     }
 
-    public async execute(call: Call) {
-        const { to, selector, calldata } = call
+    public async execute(tbaAddress: string, calls: Call[]) {
         const provider = getProvider(this.jsonRPC)
 
-        try {
-            const result = await this.account.execute({
-                contractAddress: to,
-                entrypoint: selector,
-                calldata: CallData.compile({
-                    ...calldata
-                })
+        let call: MultiCall = {
+            contractAddress: tbaAddress,
+            entrypoint: '__execute__',
+            calldata: CallData.compile({
+                calls
             })
+        }
+
+        try {
+            const result = await this.account.execute(call)
             await provider.waitForTransaction(result.transaction_hash)
             return true
         }
@@ -124,13 +125,13 @@ export class TokenboundClient {
         }
     }
 
-    public async is_locked(option: LockOptions) {
-        const { tbaAddress } = option
-        const contract = new Contract(accountAbi, tbaAddress, this.account)
+    public async is_locked(tbaAddress: string) {
+        const provider = getProvider(this.jsonRPC)
+        const contract = new Contract(accountAbi, tbaAddress, provider)
 
         try {
-            let { lock_status, time_until_unlocks } = await contract.is_locked()
-            return { lock_status, time_until_unlocks}
+            let lock_status = await contract.is_locked()
+            return lock_status
         }
         catch (error) {
             throw error
@@ -163,16 +164,16 @@ export class TokenboundClient {
     }
 
     public async transferERC20(options: ERC20TransferOptions) {
-        const { contractAddress, recipient, amount} = options
+        const { tbaAddress, contractAddress, recipient, amount} = options
 
         let call: Call = {
             to: contractAddress,
-            selector: 'transfer',
-            calldata: [recipient, amount]
+            selector: "0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e",
+            calldata: [recipient, cairo.uint256(amount)]
         }
 
         try {
-            return await this.execute(call)
+            return await this.execute(tbaAddress, [call])
         }
         catch (error) {
             throw error
@@ -180,16 +181,16 @@ export class TokenboundClient {
     }
 
     public async transferNFT(options: NFTTransferOptions) {
-        const { contractAddress, tokenId, sender, recipient} = options
+        const { tbaAddress, contractAddress, tokenId, sender, recipient} = options
 
         let call: Call = {
             to: contractAddress,
-            selector: 'transferFrom',
-            calldata: [sender, recipient, tokenId]
+            selector: "0x41b033f4a31df8067c24d1e9b550a2ce75fd4a29e1147af9752174f0e6cb20",
+            calldata: [sender, recipient, cairo.uint256(tokenId)]
         }
 
         try {
-            return await this.execute(call)
+            return await this.execute(tbaAddress, [call])
         }
         catch (error) {
             throw error
@@ -197,4 +198,4 @@ export class TokenboundClient {
     }
 }
 
-// pending methods (executeMulticall, signMessage)
+// pending methods (signMessage)
