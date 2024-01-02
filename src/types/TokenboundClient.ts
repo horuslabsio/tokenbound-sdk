@@ -26,10 +26,16 @@ export interface AccountStatus {
     classHash: string
 }
 
+export interface MultiCall {
+    contractAddress: string,
+    entrypoint: string,
+    calldata: any,
+}
+
 export interface Call {
     to: string
     selector: string
-    calldata?: string[]
+    calldata: any[]
 }
 
 export interface LockOptions {
@@ -49,12 +55,14 @@ export interface GetOwnerOptions {
 }
 
 export interface ERC20TransferOptions {
-    contractAddress: string,
-    recipient: string,
+    tbaAddress: string
+    contractAddress: string
+    recipient: string
     amount: string
 }
 
 export interface NFTTransferOptions {
+    tbaAddress: string
     contractAddress: string
     tokenId: string
     sender: string

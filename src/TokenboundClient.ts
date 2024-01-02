@@ -1,6 +1,6 @@
 import { AccountInterface, Contract, BigNumberish, CallData } from "starknet"
 import { accountClient } from "./utils/account"
-import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions, ERC20TransferOptions, NFTTransferOptions } from "./types/TokenboundClient"
+import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions, ERC20TransferOptions, NFTTransferOptions, MultiCall } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
 
 import registryAbi from "./abis/registry.abi.json"
@@ -92,18 +92,24 @@ export class TokenboundClient {
         }
     }
 
-    public async execute(call: Call) {
-        const { to, selector, calldata } = call
+    public async execute(tbaAddress: string, calls: Call[]) {
         const provider = getProvider(this.jsonRPC)
+        let multicall = []
+
+        for(let i = 0; i < calls.length; i++) {
+            let call_to_be_executed = calls[i]
+            let call: MultiCall = {
+                contractAddress: tbaAddress,
+                entrypoint: '__execute__',
+                calldata: CallData.compile({
+                    call_to_be_executed
+                })
+            }
+            multicall.push(call)
+        }
 
         try {
-            const result = await this.account.execute({
-                contractAddress: to,
-                entrypoint: selector,
-                calldata: CallData.compile({
-                    ...calldata
-                })
-            })
+            const result = await this.account.execute(multicall)
             await provider.waitForTransaction(result.transaction_hash)
             return true
         }
@@ -162,7 +168,7 @@ export class TokenboundClient {
     }
 
     public async transferERC20(options: ERC20TransferOptions) {
-        const { contractAddress, recipient, amount} = options
+        const { tbaAddress, contractAddress, recipient, amount} = options
 
         let call: Call = {
             to: contractAddress,
@@ -171,7 +177,7 @@ export class TokenboundClient {
         }
 
         try {
-            return await this.execute(call)
+            return await this.execute(tbaAddress, [call])
         }
         catch (error) {
             throw error
@@ -179,7 +185,7 @@ export class TokenboundClient {
     }
 
     public async transferNFT(options: NFTTransferOptions) {
-        const { contractAddress, tokenId, sender, recipient} = options
+        const { tbaAddress, contractAddress, tokenId, sender, recipient} = options
 
         let call: Call = {
             to: contractAddress,
@@ -188,7 +194,7 @@ export class TokenboundClient {
         }
 
         try {
-            return await this.execute(call)
+            return await this.execute(tbaAddress, [call])
         }
         catch (error) {
             throw error
@@ -196,5 +202,4 @@ export class TokenboundClient {
     }
 }
 
-// TODO: execute should call `execute` on TBA, passing in the arguements
-// pending methods (executeMulticall, signMessage)
+// pending methods (signMessage)
