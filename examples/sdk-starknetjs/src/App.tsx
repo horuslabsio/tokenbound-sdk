@@ -25,7 +25,6 @@ function App() {
     registryAddress: registryAddress,
     implementationAddress: implementationAddress,
     jsonRPC: `https://starknet-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
-
   }
   const tokenbound = new TokenboundClient(options)
 
