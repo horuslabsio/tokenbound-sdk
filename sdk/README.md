@@ -12,12 +12,18 @@ examples/sdk-starknetjs-starknetkit-starknet-react - An example app using the to
 Development
 Clone repository and install dependencies:
 # clone the repo
-$ git clone <repo>
+```
+git clone <repo>
+```
 # install dependencies
-$ npm install
+```
+npm install
+```
 # build packages
-$ npm run build
-NOTE: Any local changes to SDK methods in TokenboundClient.ts require a rebuild to be useable in the example apps in /example
+```
+npm run build
+```
+NOTE: Any local changes to SDK methods in `TokenboundClient.ts` require a rebuild to be useable in the example apps in /example
 
 ## API Reference
 ### TokenboundClient
