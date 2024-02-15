@@ -7,7 +7,7 @@
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
-    "outDir": "./dist",
+    "outDir": "dist",
     "declaration": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

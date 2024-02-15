@@ -2,7 +2,7 @@
   "name": "starknet-tokenbound-sdk",
   "version": "0.1.34",
   "description": "SDK for starknet tokenbound accounts",
-  "git repository": "https://github.com/Starknet-Africa-Edu/TBA-SDK",
+  "git repository": "https://github.com/Starknet-Africa-Edu/TBA-SDK/sdk",
   "author": "Darlington Nnam, Ademola Kelvin",
   "type": "module",
   "files": [
