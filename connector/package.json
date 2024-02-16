@@ -12,6 +12,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "get-starknet-core": "^3.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -43,6 +44,7 @@
     "starknet": "^6.0.0",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
-    "vite-plugin-dts": "^3.5.1"
+    "vite-plugin-dts": "^3.5.1",
+    "zod": "^3.22.4"
   }
 }

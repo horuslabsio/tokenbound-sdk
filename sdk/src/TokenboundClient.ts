@@ -1,6 +1,24 @@
-import { AccountInterface, Contract, BigNumberish, CallData, cairo, TypedData } from "starknet"
+import { 
+    AccountInterface,
+    Contract, 
+    BigNumberish, 
+    CallData, 
+    cairo 
+} from "starknet"
+
+import { 
+    LockOptions, 
+    Call, 
+    CreateAccountOptions, 
+    GetAccountOptions, 
+    TokenboundClientOptions, 
+    GetOwnerOptions, 
+    ERC20TransferOptions, 
+    NFTTransferOptions, 
+    MultiCall 
+} from "./types/TokenboundClient"
+
 import { accountClient } from "./utils/account"
-import { LockOptions, Call, CreateAccountOptions, GetAccountOptions, TokenboundClientOptions, GetOwnerOptions, ERC20TransferOptions, NFTTransferOptions, MultiCall } from "./types/TokenboundClient"
 import { getProvider } from "./utils/provider"
 
 import registryAbi from "./abis/registry.abi.json"
@@ -204,12 +222,5 @@ export class TokenboundClient {
         }
     }
 
-    public async signMessage(typedData: TypedData) {
-        try {
-            return await this.account.signMessage(typedData)
-        }
-        catch (error) {
-            throw error
-        }
-    }
+    // implement signMessage method
 }
