@@ -204,12 +204,5 @@ export class TokenboundClient {
         }
     }
 
-    public async signMessage(typedData: TypedData) {
-        try {
-            return await this.account.signMessage(typedData)
-        }
-        catch (error) {
-            throw error
-        }
-    }
+    // implement signMessage method
 }

@@ -6,7 +6,6 @@ import {
     SignerInterface,
     Call,
     CallData,
-    typedData
 } from "starknet";
 
 class UnimplementedSigner implements SignerInterface {
@@ -53,10 +52,10 @@ class UnimplementedSigner implements SignerInterface {
                     calls
                 })
             }
-            return await this.parentAccount.execute(call)
+            return await this.parentAccount.execute(call);
         }
         catch(error) {
-            console.log(error)
+            console.log(error);
             throw new Error("Error while executing a transaction");
         }
     }
