@@ -22,7 +22,7 @@ export interface TokenboundStarknetWindowObject {
 
 export const getTokenboundStarknetWindowObject = (
     options: TokenboundStarknetWindowObject,
-    provider: ProviderInterface, 
+    provider?: ProviderInterface, 
     tokenboundAddress: string, 
     parentAccount: AccountInterface,
 ): StarknetWindowObject => {
