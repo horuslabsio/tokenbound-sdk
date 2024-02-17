@@ -7,10 +7,10 @@ export default defineConfig({
   build: {
     lib: {
       // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'src/modal/index.ts'),
+      entry: resolve(__dirname, 'src/connector/index.ts'),
       name: 'tokenbound-connector',
       // the proper extensions will be added
-      fileName: 'starknet-tokenbound-connector',
+      fileName: 'tokenbound-connector',
     },
   },
   plugins: [dts()],

@@ -1,6 +1,3 @@
-// connector base, important links:
-
-// https://github.com/argentlabs/starknetkit/blob/develop/src/connectors/webwallet/index.ts
 import { connect } from "starknetkit"
 import { InjectedConnector } from "starknetkit/injected"
 import { WebWalletConnector } from "starknetkit/webwallet"
@@ -18,7 +15,6 @@ import type {
 
 import {
     Connector,
-    type ConnectorData,
     type ConnectorIcons
 } from "./types/connector"
 
@@ -91,7 +87,7 @@ export class TokenboundConnector extends Connector {
         return "Powered by Starknet Africa"
     }
 
-    async connect(): Promise<ConnectorData> {
+    async connect(): Promise<StarknetWindowObject> {
         await this.ensureWallet()
         
         if(!this._wallet) {
@@ -109,13 +105,7 @@ export class TokenboundConnector extends Connector {
             throw new UserRejectedRequestError()
         }
 
-        const account = this._wallet.account as unknown as AccountInterface
-        const chainId = await this.chainId()
-
-        return {
-            account: account.address,
-            chainId,
-        }
+        return this._wallet
     }
 
     async disconnect(): Promise<void> {
@@ -219,9 +209,9 @@ export class TokenboundConnector extends Connector {
                 name: "Tokenbound Account",
                 version: "1.0.0"
             },
-            provider,
             tokenboundAddress,
-            parentAccount
+            parentAccount,
+            provider
         )
 
         _wallet = wallet ?? null

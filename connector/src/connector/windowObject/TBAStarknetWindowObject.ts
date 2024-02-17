@@ -5,12 +5,14 @@ import type {
     WalletEvents,
   } from "get-starknet-core"
 
-import type { 
+import { 
     AccountInterface, 
-    ProviderInterface 
+    ProviderInterface,
+    RpcProvider 
 } from "starknet";
 
 import { TokenboundAccount } from "./tokenboundAccount";
+import { mapChainToNodeUrl } from "../helpers/mapChainToNodeUrl";
 
 export const userEventHandlers: WalletEvents[] = []
 export interface TokenboundStarknetWindowObject {
@@ -22,10 +24,13 @@ export interface TokenboundStarknetWindowObject {
 
 export const getTokenboundStarknetWindowObject = (
     options: TokenboundStarknetWindowObject,
-    provider?: ProviderInterface, 
     tokenboundAddress: string, 
     parentAccount: AccountInterface,
+    provider?: ProviderInterface, 
 ): StarknetWindowObject => {
+    const nodeUrl = mapChainToNodeUrl("SN_MAIN")
+    const defaultProvider = provider ?? new RpcProvider({ nodeUrl })
+
     const wallet: StarknetWindowObject = {
         ...options,
         isConnected: false,
@@ -42,7 +47,7 @@ export const getTokenboundStarknetWindowObject = (
             try {
                 await updateStarknetWindowObject(
                     wallet,
-                    provider,
+                    defaultProvider,
                     tokenboundAddress,
                     parentAccount
                 )

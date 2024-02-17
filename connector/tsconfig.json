@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-      "target": "ESNext",
+      "target": "ES2020",
       "useDefineForClassFields": true,
       "module": "ESNext",
-      "lib": ["ESNext", "DOM"],
+      "lib": ["ES2020", "DOM"],
       "moduleResolution": "Bundler",
       "strict": true,
       "jsx": "preserve",
@@ -18,6 +18,6 @@
       "noImplicitReturns": false,
       "skipLibCheck": true
     },
-    "include": ["src"],
+    "include": ["src", "test.js"],
     "exclude": ["src/test"]
   }
