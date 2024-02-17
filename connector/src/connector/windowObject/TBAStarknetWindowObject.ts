@@ -1,7 +1,9 @@
-import type { 
-    ConnectedStarknetWindowObject, 
-    StarknetWindowObject 
-} from "get-starknet-core";
+import type {
+    AccountChangeEventHandler,
+    ConnectedStarknetWindowObject,
+    StarknetWindowObject,
+    WalletEvents,
+  } from "get-starknet-core"
 
 import type { 
     AccountInterface, 
@@ -10,7 +12,83 @@ import type {
 
 import { TokenboundAccount } from "./tokenboundAccount";
 
-export async function updateStarknetWindowObject(
+export const userEventHandlers: WalletEvents[] = []
+export interface TokenboundStarknetWindowObject {
+    id: string
+    icon: string
+    name: string
+    version: string
+}
+
+export const getTokenboundStarknetWindowObject = (
+    options: TokenboundStarknetWindowObject,
+    provider: ProviderInterface, 
+    tokenboundAddress: string, 
+    parentAccount: AccountInterface,
+): StarknetWindowObject => {
+    const wallet: StarknetWindowObject = {
+        ...options,
+        isConnected: false,
+        provider,
+
+        async request() {
+            throw new Error("not implemented")
+        },
+
+        async enable(ops) {
+            if (ops?.starknetVersion !== "v4") {
+                throw Error("not implemented")
+            }
+            try {
+                await updateStarknetWindowObject(
+                    wallet,
+                    provider,
+                    tokenboundAddress,
+                    parentAccount
+                )
+                return [tokenboundAddress]
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(error.message)
+                }
+                throw new Error("Unknown error on enable wallet")
+            }
+        },
+
+        async isPreauthorized() {
+            throw new Error("not implemented")
+        },
+
+        on: (event, handleEvent) => {
+            if(event === "accountsChanged") {
+                userEventHandlers.push({
+                    type: event,
+                    handler: handleEvent as AccountChangeEventHandler
+                })
+            } else {
+                throw new Error(`Unknown event: ${event}`)
+            }
+        },
+
+        off: (event, handleEvent) => {
+            if(event !== "accountsChanged" && event !== "networkChanged") {
+                throw new Error(`Unknown event: ${event}`)
+            }
+
+            const eventIndex = userEventHandlers.findIndex(
+                (userEvent) => userEvent.type === event && userEvent.handler === handleEvent,
+            )
+
+            if (eventIndex >= 0) {
+                userEventHandlers.splice(eventIndex, 1)
+            }
+        },
+    }
+    return wallet
+}
+
+async function updateStarknetWindowObject(
     wallet: StarknetWindowObject,
     provider: ProviderInterface,
     tokenboundAddress: string,
