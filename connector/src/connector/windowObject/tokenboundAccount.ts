@@ -48,11 +48,10 @@ class UnimplementedSigner implements SignerInterface {
             let call: Call = {
                 contractAddress: this.address,
                 entrypoint: '__execute__',
-                calldata: CallData.compile({
-                    calls
-                })
+                calldata: CallData.compile({ calls })
             }
-            return await this.parentAccount.execute(call);
+            console.log(call)
+            return await this.parentAccount.execute(call)
         }
         catch(error) {
             console.log(error);
