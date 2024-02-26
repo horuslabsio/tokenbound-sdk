@@ -21,7 +21,6 @@ import {
 import {
     ConnectorNotConnectedError,
     ConnectorNotFoundError,
-    UserNotConnectedError,
     UserRejectedRequestError,
 } from "./constants"
 
@@ -111,10 +110,6 @@ export class TokenboundConnector extends Connector {
     async disconnect(): Promise<void> {
         if(!this.available() && !this._wallet) {
             throw new ConnectorNotFoundError()
-        }
-
-        if(!this._wallet?.isConnected) {
-            throw new UserNotConnectedError()
         }
 
         _wallet = null

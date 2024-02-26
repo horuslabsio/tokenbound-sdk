@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import react from "@vitejs/plugin-react"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,8 +14,5 @@ export default defineConfig({
       fileName: 'tokenbound-connector',
     },
   },
-  plugins: [dts()],
-  optimizeDeps: {
-    exclude: ['**/__test__/**', '**/*.test.ts', '**/*.spec.ts'],
-  },
+  plugins: [dts(), react()],
 })
