@@ -3,7 +3,6 @@ import { Fragment, useState } from 'react';
 import { TokenboundConnector } from "../src/connector/index"
 import { ConnectedStarknetWindowObject } from 'get-starknet-core'
 
-
 export default function MyModal({ closeModal, isOpen }: any) {
   const [selectedOption, setSelectedOption] = useState<string>('');
   const [value, setValue] = useState<string>('')
@@ -35,12 +34,8 @@ export default function MyModal({ closeModal, isOpen }: any) {
 
   }
 
-
-
   return (
     <>
-
-
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
