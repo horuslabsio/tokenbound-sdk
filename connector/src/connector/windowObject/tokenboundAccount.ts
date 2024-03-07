@@ -43,7 +43,7 @@ class UnimplementedSigner implements SignerInterface {
     }
 
     override execute = async (
-        calls: Call
+        calls: Call[]
     ) => {
         try{
             const transactions = Array.isArray(calls) ? calls : [calls];
