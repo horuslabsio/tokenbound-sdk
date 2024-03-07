@@ -1,4 +1,4 @@
-[
+export const ABI = [
     {
       "name": "core::integer::u256",
       "type": "struct",
@@ -44,4 +44,4 @@
       "type": "event",
       "variants": []
     }
-  ]
+  ] as const

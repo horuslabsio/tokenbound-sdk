@@ -6,6 +6,7 @@ import {
     SignerInterface,
     Call,
     CallData,
+    RawArgs
 } from "starknet";
 
 class UnimplementedSigner implements SignerInterface {
@@ -44,14 +45,24 @@ class UnimplementedSigner implements SignerInterface {
     override execute = async (
         calls: Call[]
     ) => {
-        try {
-            let call: Call = {
+        try{
+            const transactions = Array.isArray(calls) ? calls : [calls];
+            
+            const txns = transactions.map((call) => ({
+                contractAddress: call.contractAddress,
+                entrypoint: call.entrypoint,
+                calldata: Array.isArray(call.calldata) && '__compiled__' in call.calldata
+                ? call.calldata
+                : CallData.compile(call.calldata as RawArgs)
+            }))
+
+            let callToBeExecuted: Call = {
                 contractAddress: this.address,
                 entrypoint: '__execute__',
-                calldata: CallData.compile({ calls })
+                calldata: CallData.compile({ txns })
             }
-            console.log(call)
-            return await this.parentAccount.execute(call)
+
+            return await this.parentAccount.execute(callToBeExecuted)
         }
         catch(error) {
             console.log(error);

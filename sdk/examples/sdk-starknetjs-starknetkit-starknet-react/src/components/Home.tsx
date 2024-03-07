@@ -15,7 +15,7 @@ function Home() {
   const { account } = useAccount()
 
   const registryAddress: string = "0x1b0ef7a47d9db8652f8a9010ecaf3e6537442bfab3afed13449b571fa1da37a"
-  const implementationAddress: string = "0x011bc9fabead984d714cf82ec46ffa23f4558f27ae73561542fed9fa8fb510ae"
+  const implementationAddress: string = "0x499ef439944ff0a477c4ecc14785ad31f4c12300993e1ce6568f9c1f2c24c09"
 
   const options = {
     account: account,
@@ -30,8 +30,8 @@ function Home() {
   }
 
   // replace with a sample NFT your account owns on mainnet
-  const tokenContract = "0x042e7815d9e90b7ea53f4550f74dc12207ed6a0faaef57ba0dbf9a66f3762d82"
-  const tokenId = "5866077281322167718"
+  const tokenContract = "0x42e7815d9e90b7ea53f4550f74dc12207ed6a0faaef57ba0dbf9a66f3762d82"
+  const tokenId = "2030367002182993916"
 
   // url to starkscan
   const url = `https://starkscan.co/contract/${tbaAccount}`
@@ -41,8 +41,7 @@ function Home() {
     try {
       await tokenbound.createAccount({
         tokenContract: tokenContract,
-        tokenId: tokenId,
-        salt: "3000000000"
+        tokenId: tokenId
       })
     }
     catch (error) {
@@ -75,7 +74,6 @@ function Home() {
     const account = await tokenbound.getAccount({
       tokenContract: tokenContract,
       tokenId: tokenId,
-      salt: "3000000000"
     })
     setTBAAccount(num.toHex(account))
   }
@@ -85,7 +83,6 @@ function Home() {
     const status = await tokenbound.checkAccountDeployment({
       tokenContract,
       tokenId,
-      salt: "3000000000"
     })
     setDeployStatus(status?.deployed)
     setAccountClassHash(status?.classHash)
