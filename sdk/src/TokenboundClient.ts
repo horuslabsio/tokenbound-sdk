@@ -3,6 +3,7 @@ import {
     Contract, 
     BigNumberish, 
     CallData, 
+    TypedData,
     cairo 
 } from "starknet"
 
@@ -222,5 +223,12 @@ export class TokenboundClient {
         }
     }
 
-    // implement signMessage method
+    public async signMessage(typedData: TypedData) {
+        try {
+            return await this.account.signMessage(typedData)
+        }
+        catch (error) {
+            throw error
+        }
+    }
 }
