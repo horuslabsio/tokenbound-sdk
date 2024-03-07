@@ -1,3 +1,10 @@
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
 .App {
     text-align: center;
   }
@@ -28,13 +35,17 @@
   }
 
   .button {
-    background-color: white;
+    background-color: white !important;
     color: black;
     margin: 20px;
     border-radius: 5px;
     padding: 5px;
     font-size: 20px;
     cursor: pointer;
+  }
+
+  .card {
+    margin-top: 30px;
   }
   
   @keyframes App-logo-spin {

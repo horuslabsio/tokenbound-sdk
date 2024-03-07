@@ -4,7 +4,7 @@ import { TokenboundConnector } from '../connector'
 import { Contract, RpcProvider } from 'starknet'
 import { ConnectedStarknetWindowObject } from 'get-starknet-core'
 
-import contractAbi from './abis/abi.json'
+import { ABI } from './abis/abi';
 const contractAddress = "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300"
 
 function Dapp() {
@@ -37,7 +37,7 @@ function Dapp() {
 
   const increaseCounter = async() => {
     try {
-      const contract = new Contract(contractAbi, contractAddress, account)
+      const contract = new Contract(ABI, contractAddress, account).typedv2(ABI)
       await contract.increment()
       alert("you successfully increased the counter")
     }
@@ -48,7 +48,7 @@ function Dapp() {
 
   const decreaseCounter = async() => {
     try {
-      const contract = new Contract(contractAbi, contractAddress, account)
+      const contract = new Contract(ABI, contractAddress, account).typedv2(ABI)
       await contract.decrement()
       alert("you sucessfully decreased the counter")
     }
@@ -60,7 +60,7 @@ function Dapp() {
   const getCounter = async() => {
     const provider = new RpcProvider({ nodeUrl: "https://starknet-mainnet.public.blastapi.io" })
     try {
-      const contract = new Contract(contractAbi, contractAddress, provider)
+      const contract = new Contract(ABI, contractAddress, provider).typedv2(ABI)
       const counter = await contract.get_current_count()
       setRetrievedValue(counter.toString())
     }
