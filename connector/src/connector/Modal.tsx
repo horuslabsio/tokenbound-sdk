@@ -1,39 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react';
-import { TokenboundConnector } from "../src/connector/index"
-import { ConnectedStarknetWindowObject } from 'get-starknet-core'
+import { Fragment } from 'react';
+import { IModal } from './types/modal';
 
-export default function MyModal({ closeModal, isOpen }: any) {
-  const [selectedOption, setSelectedOption] = useState<string>('');
-  const [value, setValue] = useState<string>('')
+export default function TokenBoundModal({ closeModal, isOpen,value, selectedOption, handleChange, handleChangeInput, onConnect }: IModal) {
   const options = ['argentX', 'braavos'];
-  const [connection, setConnection] = useState<ConnectedStarknetWindowObject>()
-
-  const handleChange = (e: any) => {
-    setSelectedOption(e.target.value);
-  };
-
-  const handleChangeInput = (e: any) => {
-    setValue(e.target.value)
-  }
-
-  const tokenbound = new TokenboundConnector({
-    tokenboundAddress: value,
-    parentAccountId: selectedOption
-  })
-
-  const connectTBA = async () => {
-    const result = await tokenbound.connect();
-    console.log(result);
-    console.log('connected:', await result.isConnected);
-    
-    
-    if (result && (await result).isConnected) {
-      setConnection(connection)
-    }
-
-  }
-
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -62,6 +32,7 @@ export default function MyModal({ closeModal, isOpen }: any) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className='flex items-center justify-between mb-4'>
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
@@ -69,20 +40,22 @@ export default function MyModal({ closeModal, isOpen }: any) {
                     Connect with tokenbound
                   </Dialog.Title>
 
-                  <div className="w-64">
+                  <div onClick={closeModal} className='text-black cursor-pointer'>X</div>
+                  </div>
+                  <div className="w-full">
                     <input
                       type="text"
+                      placeholder="TBA ADDRESS"
                       value={value}
                       onChange={handleChangeInput}
-                      placeholder="TBA ADDRESS"
-                      className="w-full border border-gray-300 rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
+                      className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
                     />
                     <select
-                      value={selectedOption}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
+                    onChange={handleChange}
+                    value={selectedOption}
+                      className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
                     >
-                      <option value="">Select an option</option>
+                      <option value="id">Select an option</option>
                       {options.map((option, index) => (
                         <option key={index} value={option}>
                           {option}
@@ -91,7 +64,7 @@ export default function MyModal({ closeModal, isOpen }: any) {
                     </select>
                   </div>
 
-                  <button onClick={connectTBA} className='text-black border-gray-500'>Connect</button>
+                  <button onClick={onConnect} className='w-full text-white bg-[#0C0C4F] border-gray-500 outline-none p-2'>Connect with tokenbound account</button>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
