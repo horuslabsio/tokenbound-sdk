@@ -70,8 +70,8 @@ function Dapp() {
   } 
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="">
+      <header className="">
           {
             connection ? 
               <button className="button" onClick={disconnector}>Disconnect</button>
