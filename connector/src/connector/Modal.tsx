@@ -43,9 +43,11 @@ export default function TokenBoundModal({ closeModal, isOpen,value, selectedOpti
                   <div onClick={closeModal} className='text-black cursor-pointer'>X</div>
                   </div>
                   <div className="w-full">
+                    <label className='text-black mb-2 block' htmlFor="tba-address">Token bound address</label>
                     <input
                       type="text"
                       placeholder="TBA ADDRESS"
+                      id='tba-address'
                       value={value}
                       onChange={handleChangeInput}
                       className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
@@ -55,7 +57,7 @@ export default function TokenBoundModal({ closeModal, isOpen,value, selectedOpti
                     value={selectedOption}
                       className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
                     >
-                      <option value="id">Select an option</option>
+                      <option value="id">Select parent wallet</option>
                       {options.map((option, index) => (
                         <option key={index} value={option}>
                           {option}
