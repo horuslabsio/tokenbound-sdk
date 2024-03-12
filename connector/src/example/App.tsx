@@ -1,10 +1,8 @@
 import { useState } from "react";
-import "./Dapp.css";
-import { TokenboundConnector } from "../connector/index";
+import "./App.css";
 import { Contract, RpcProvider } from "starknet";
-import { TokenBoundModal } from "../../src/connector/index";
 import { ConnectedStarknetWindowObject } from "get-starknet-core";
-import { useTokenBoundModal } from "../../src/connector/hooks";
+import { TokenboundConnector, TokenBoundModal, useTokenBoundModal } from "../index";
 
 import { ABI } from "./abis/abi";
 const contractAddress =
@@ -26,16 +24,17 @@ function Dapp() {
     handleChangeInput,
     resetInputValues,
   } = useTokenBoundModal();
-  console.log('open',isOpen)
 
   const tokenbound = new TokenboundConnector({
     tokenboundAddress: value,
     parentAccountId: selectedOption,
   });
 
-  const connector = async () => {
+  const connectTBA = async () => {
     const connection = await tokenbound.connect();
-    console.log(connection);
+    closeModal();
+    resetInputValues();
+
     if (connection && connection.isConnected) {
       setConnection(connection);
       setAccount(connection.account);
@@ -43,7 +42,7 @@ function Dapp() {
     }
   };
 
-  const disconnector = async () => {
+  const disconnectTBA = async () => {
     await tokenbound.disconnect();
     setConnection(undefined);
     setAccount(undefined);
@@ -85,31 +84,10 @@ function Dapp() {
     }
   };
 
-  const connectTBA = async () => {
-    const result = await tokenbound.connect();
-    console.log(result);
-    console.log("connected:", await result.isConnected);
-
-    if (result && (await result).isConnected) {
-      setConnection(connection);
-      closeModal();
-      resetInputValues();
-    }
-  };
-
   return (
     <div className="">
       <header className="">
-        {connection ? (
-          <button className="button" onClick={disconnector}>
-            Disconnect
-          </button>
-        ) : (
-          <button className="button" onClick={connector}>
-            Connect wallet
-          </button>
-        )}
-        <p>{address ? address : ""}</p>
+        <p><b>Address: {address ? address : ""}</b></p>
 
         <div className="card">
           <p>Increase/Decrease Counter &rarr;</p>
@@ -141,16 +119,16 @@ function Dapp() {
         </div>
       </header>
 
-      {connection ? (
+      {!connection ? (
         <button
-          className="text-white bg-[#0C0C4F] text-center border-gray-500 outline-none p-2"
+          className="text-white bg-[#0C0C4F] text-center border-gray-500 outline-none p-2 mt-3"
           onClick={openModal}
         >
-          Open Modal
+          Connect Wallet
         </button>
       ) : (
-        <button className="text-white bg-[#0C0C4F] text-center border-gray-500 outline-none p-2">
-          Connected
+        <button className="text-white bg-[#0C0C4F] text-center border-gray-500 outline-none p-2 mt-3" onClick={disconnectTBA}>
+          Disconnect
         </button>
       )}
 
