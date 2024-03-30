@@ -2,7 +2,6 @@ import { connect } from "starknetkit"
 import { InjectedConnector } from "starknetkit/injected"
 import { WebWalletConnector } from "starknetkit/webwallet"
 import { ArgentMobileConnector } from "starknetkit/argentMobile"
-import TokenBoundModal from "../modal/TokenBoundModal"
 
 import type {
     AccountChangeEventHandler,
@@ -214,5 +213,3 @@ export class TokenboundConnector extends Connector {
         this._wallet = _wallet
     }
 }
-
-export {TokenBoundModal}

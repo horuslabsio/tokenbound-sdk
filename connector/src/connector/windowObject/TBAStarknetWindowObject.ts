@@ -1,68 +1,44 @@
 import type {
     AccountChangeEventHandler,
-    ConnectedStarknetWindowObject,
     StarknetWindowObject,
     WalletEvents,
   } from "get-starknet-core"
 
-import { 
-    AccountInterface, 
-    ProviderInterface,
-    RpcProvider 
-} from "starknet";
-
-import { TokenboundAccount } from "./tokenboundAccount";
-import { mapChainToNodeUrl } from "../helpers/mapChainToNodeUrl";
-
 export const userEventHandlers: WalletEvents[] = []
-export interface TokenboundStarknetWindowObject {
+
+export interface tokenboundWindowObject {
     id: string
     icon: string
     name: string
     version: string
 }
 
-export const getTokenboundStarknetWindowObject = (
-    options: TokenboundStarknetWindowObject,
+const getTokenboundWindowObject = (
+    options: tokenboundWindowObject,
     tokenboundAddress: string, 
-    parentAccount: AccountInterface,
-    provider?: ProviderInterface, 
+    parentWallet: StarknetWindowObject,
 ): StarknetWindowObject => {
-    const nodeUrl = mapChainToNodeUrl("SN_MAIN")
-    const defaultProvider = provider ?? new RpcProvider({ nodeUrl })
-
     const wallet: StarknetWindowObject = {
         ...options,
-        isConnected: false,
-        provider,
 
-        async request() {
-            throw new Error("not implemented")
-        },
-
-        async enable(ops) {
-            if (ops?.starknetVersion !== "v4") {
-                throw Error("not implemented")
-            }
-            try {
-                await updateStarknetWindowObject(
-                    wallet,
-                    defaultProvider,
-                    tokenboundAddress,
-                    parentAccount
-                )
-                return [tokenboundAddress]
-            }
-            catch (error) {
-                if (error instanceof Error) {
-                    throw new Error(error.message)
+        async request(call) {
+            switch(call.type) {
+                case "wallet_requestAccounts": {
+                    return [tokenboundAddress]
                 }
-                throw new Error("Unknown error on enable wallet")
+                case "wallet_getPermissions": {
+                    return parentWallet.request({
+                        type: "wallet_getPermissions"
+                    })
+                }
+                case "wallet_requestChainId": {
+                    return parentWallet.request({
+                        type: "wallet_requestChainId"
+                    })
+                }
+                default:
+                    throw new Error("not implemented")
             }
-        },
-
-        async isPreauthorized() {
-            throw new Error("not implemented")
         },
 
         on: (event, handleEvent) => {
@@ -93,27 +69,20 @@ export const getTokenboundStarknetWindowObject = (
     return wallet
 }
 
-async function updateStarknetWindowObject(
-    wallet: StarknetWindowObject,
-    provider: ProviderInterface,
+export const TokenboundStarknetWindowObject = async (
     tokenboundAddress: string,
-    parentAccount: AccountInterface
-): Promise<ConnectedStarknetWindowObject> {
-    const chainId = await provider.getChainId()
+    parentWallet: StarknetWindowObject
+): Promise<StarknetWindowObject> => {
+    const starknetWindowObject = getTokenboundWindowObject(
+        {
+            id: "TBA",
+            name: "Tokenbound Account",
+            icon: "https://tokenbound.org/_next/image?url=%2Ftb-mark.svg&w=96&q=75",
+            version: "1.0.0"
+        },
+        tokenboundAddress,
+        parentWallet
+    )
 
-    const valuesToAssign: Pick<
-        ConnectedStarknetWindowObject, "id" | "name" | "icon" | "version" | "isConnected" | "chainId" | "selectedAddress" | "account" | "provider"
-    > = {
-        id: "TBA",
-        name: "Tokenbound Account",
-        icon: "https://tokenbound.org/_next/image?url=%2Ftb-mark.svg&w=96&q=75",
-        version: "1.0.0",
-        isConnected: true,
-        chainId,
-        selectedAddress: tokenboundAddress,
-        account: new TokenboundAccount(provider, tokenboundAddress, parentAccount),
-        provider
-    } 
-
-    return Object.assign(wallet, valuesToAssign)
+    return starknetWindowObject
 }
