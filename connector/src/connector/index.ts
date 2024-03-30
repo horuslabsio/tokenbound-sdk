@@ -3,18 +3,16 @@ import { InjectedConnector } from "starknetkit/injected"
 import { WebWalletConnector } from "starknetkit/webwallet"
 import { ArgentMobileConnector } from "starknetkit/argentMobile"
 
-import type {
+import {
     AccountChangeEventHandler,
     StarknetWindowObject,
+    Permission,
+    StarknetChainId
 } from "get-starknet-core"
-
-import type {
-    AccountInterface,
-    ProviderInterface,
-} from "starknet"
 
 import {
     Connector,
+    ConnectorData,
     type ConnectorIcons
 } from "./types/connector"
 
@@ -25,14 +23,13 @@ import {
 } from "./constants"
 
 import { tokenbound_icon } from "./constants"
-import { getTokenboundStarknetWindowObject } from "./windowObject/TBAStarknetWindowObject"
+import { TokenboundStarknetWindowObject } from "./windowObject/TBAStarknetWindowObject"
 
 let _wallet: StarknetWindowObject | null = null
 
 interface TokenboundConnectorOptions {
     tokenboundAddress: string,
     parentAccountId: string,
-    provider?: ProviderInterface
 }
 
 export class TokenboundConnector extends Connector {
@@ -55,7 +52,11 @@ export class TokenboundConnector extends Connector {
         }
 
         this._wallet = _wallet
-        return this._wallet.isPreauthorized()
+        const permissions = await this._wallet.request({
+            type: "wallet_getPermissions",
+        })
+
+        return permissions.includes(Permission.Accounts)
     }
 
     get id(): string {
@@ -86,25 +87,30 @@ export class TokenboundConnector extends Connector {
         return "Powered by Starknet Africa"
     }
 
-    async connect(): Promise<StarknetWindowObject> {
+    async connect(): Promise<ConnectorData> {
         await this.ensureWallet()
         
         if(!this._wallet) {
             throw new ConnectorNotFoundError()
         }
 
+        let accounts: string[]
+
         try {
-            await this._wallet.enable({ starknetVersion: "v4" })
+            accounts = await this._wallet.request({
+                type: "wallet_requestAccounts",
+                params: { silentMode: false },
+            })
         }
         catch {
             throw new UserRejectedRequestError()
         }
 
-        if(!this._wallet.isConnected) {
-            throw new UserRejectedRequestError()
+        const chainId = await this.chainId()
+        return {
+            account: accounts[0],
+            chainId,
         }
-
-        return this._wallet
     }
 
     async disconnect(): Promise<void> {
@@ -116,24 +122,29 @@ export class TokenboundConnector extends Connector {
         this._wallet = _wallet
     }
 
-    async account(): Promise<AccountInterface> {
+    async account(): Promise<string | null> {
         this._wallet = _wallet
         
-        if(!this._wallet || !this._wallet.account) {
+        if(!this._wallet) {
             throw new ConnectorNotConnectedError()
         }
 
-        return this._wallet.account as unknown as AccountInterface
+        const [account] = await this._wallet.request({
+            type: "wallet_requestAccounts",
+            params: { silentMode: true },
+        })
+
+        return account ?? null
     }
 
-    async chainId(): Promise<bigint> {
-        if (!this._wallet || !this.wallet.account || !this._wallet.provider) {
+    async chainId(): Promise<StarknetChainId> {
+        if (!this._wallet) {
             throw new ConnectorNotConnectedError()
           }
       
-        const chainIdHex = await this._wallet.provider.getChainId()
-        const chainId = BigInt(chainIdHex)
-        return chainId
+        return this._wallet.request({
+            type: "wallet_requestChainId"
+        })
     }
 
     async initEventListener(accountChangeCb: AccountChangeEventHandler) {
@@ -157,7 +168,7 @@ export class TokenboundConnector extends Connector {
         this._wallet = null
     }
 
-    private async connectParentAccount(id: string): Promise<AccountInterface> {
+    private async connectParentWallet(id: string): Promise<StarknetWindowObject> {
         let parentWallet
 
         if(id == "argentMobile") {
@@ -189,24 +200,16 @@ export class TokenboundConnector extends Connector {
             parentWallet = wallet
         }
 
-        return parentWallet?.account as AccountInterface
+        return parentWallet!
     }
 
     private async ensureWallet(): Promise<void> {
         const tokenboundAddress = this._options.tokenboundAddress
-        const parentAccount = await this.connectParentAccount(this._options.parentAccountId)
-        const provider = this._options.provider
+        const parentWallet = await this.connectParentWallet(this._options.parentAccountId)
 
-        const wallet = await getTokenboundStarknetWindowObject(
-            {
-                id: "TBA",
-                icon: tokenbound_icon as string,
-                name: "Tokenbound Account",
-                version: "1.0.0"
-            },
+        const wallet = await TokenboundStarknetWindowObject(
             tokenboundAddress,
-            parentAccount,
-            provider
+            parentWallet
         )
 
         _wallet = wallet ?? null
