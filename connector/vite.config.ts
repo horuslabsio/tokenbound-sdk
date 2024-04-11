@@ -13,6 +13,9 @@ export default defineConfig({
       // the proper extensions will be added
       fileName: 'tokenbound-connector',
     },
+    rollupOptions: {
+      external: ["starknet"],
+    },
   },
   plugins: [dts(), react()],
 })

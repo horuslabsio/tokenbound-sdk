@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-export function useTokenBoundModal(initialValue = "", initialOption = "") {
+function useTokenBoundModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = useState(initialValue);
-  const [selectedOption, setSelectedOption] = useState(initialOption);
+  const [value, setValue] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
 
   const openModal = () => {
     setIsOpen(!isOpen);
@@ -23,7 +23,7 @@ export function useTokenBoundModal(initialValue = "", initialOption = "") {
 
   const resetInputValues = () => {
     setValue("");
-    setSelectedOption(""); // Set to the default option or any desired value
+    setSelectedOption("");
   };
 
   return {
@@ -37,3 +37,5 @@ export function useTokenBoundModal(initialValue = "", initialOption = "") {
     resetInputValues
   };
 }
+
+export default useTokenBoundModal;
