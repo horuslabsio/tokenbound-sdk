@@ -1,8 +1,9 @@
+import React from 'react';
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react';
 import { IModal } from '../connector/types/modal';
 
-export default function TokenBoundModal({ closeModal, isOpen,value, selectedOption, handleChange, handleChangeInput, onConnect }: IModal) {
+function TokenBoundModal({ isOpen, closeModal, value, selectedOption, handleChange, handleChangeInput, onConnect }: IModal) {
   const options = ['argentX', 'braavos'];
   return (
     <>
@@ -76,3 +77,5 @@ export default function TokenBoundModal({ closeModal, isOpen,value, selectedOpti
     </>
   )
 }
+
+export default TokenBoundModal;

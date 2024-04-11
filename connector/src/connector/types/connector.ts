@@ -48,6 +48,6 @@ export abstract class Connector extends EventEmitter<ConnectorEvents> {
   abstract account(): Promise<AccountInterface>
   /** Get current chain id. */
   abstract chainId(): Promise<bigint>
-  /**  Connector StarknetWindowObject */
+  // /**  Connector StarknetWindowObject */
   abstract get wallet(): StarknetWindowObject
 }
