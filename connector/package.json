@@ -1,5 +1,5 @@
 {
-  "name": "connector",
+  "name": "tokenbound-connector",
   "version": "0.2.0",
   "description": "Connector for using dapps with your tokenbound accounts",
   "author": "Darlington Nnam",
