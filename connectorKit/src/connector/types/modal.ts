@@ -1,5 +1,5 @@
 import type { StarknetWindowObject } from "get-starknet-core"
-import type { Connector, ConnectorIcons } from "../types/connector"
+import type { Connector, ConnectorIcons } from "./connector"
 
 export type StoreVersion = "chrome" | "firefox" | "edge"
 

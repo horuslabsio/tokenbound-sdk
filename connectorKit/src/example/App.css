@@ -5,6 +5,16 @@
     text-align: center;
 }
 
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: black;
+  color: white;
+}
+
 .App {
     text-align: center;
   }
@@ -28,10 +38,6 @@
     justify-content: center;
     font-size: calc(10px + 2vmin);
     color: white;
-  }
-  
-  .App-link {
-    color: #61dafb;
   }
 
   .button {
