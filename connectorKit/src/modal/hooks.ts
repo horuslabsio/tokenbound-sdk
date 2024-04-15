@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 function useTokenBoundModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [selectedOption, setSelectedOption] = useState("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string>("");
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   const openModal = () => {
     setIsOpen(!isOpen);

@@ -2,6 +2,7 @@ import React from 'react';
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react';
 import { IModal } from '../connector/types/modal';
+import "../index.css";
 
 function TokenBoundModal({ isOpen, closeModal, value, selectedOption, handleChange, handleChangeInput, onConnect }: IModal) {
   const options = ['argentX', 'braavos'];
