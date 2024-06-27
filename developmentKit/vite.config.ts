@@ -12,6 +12,9 @@ export default defineConfig({
       // the proper extensions will be added
       fileName: 'starknet-tokenbound-sdk',
     },
+    rollupOptions: {
+      external: ["starknet"],
+    },
   },
   plugins: [dts()],
   optimizeDeps: {
