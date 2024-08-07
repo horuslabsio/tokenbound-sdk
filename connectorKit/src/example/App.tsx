@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import { Contract, RpcProvider } from "starknet";
+import { Contract, defaultProvider, RpcProvider } from "starknet";
 import { ConnectedStarknetWindowObject } from "get-starknet-core";
 import { TokenboundConnector, TokenBoundModal, useTokenBoundModal } from "../index";
 
@@ -23,11 +23,15 @@ function Dapp() {
     handleChange,
     handleChangeInput,
     resetInputValues,
+    handleWalletChange,
+    walletSWO,
+  
   } = useTokenBoundModal();
 
   const tokenbound = new TokenboundConnector({
     tokenboundAddress: value,
-    parentAccountId: selectedOption,
+    walletSWO: walletSWO,
+    provider: defaultProvider
   });
 
   const connectTBA = async () => {
@@ -139,9 +143,10 @@ function Dapp() {
           value={value}
           selectedOption={selectedOption}
           handleChange={handleChange}
+          handleWalletChange={handleWalletChange}
           handleChangeInput={handleChangeInput}
-          onConnect={connectTBA}
-        />
+          onConnect={connectTBA} 
+          walletSWO={walletSWO}        />
       )}
     </div>
   );

@@ -1,41 +1,50 @@
-import React, { useState } from 'react';
+import { WALLET_API } from "@starknet-io/types-js";
+import React, { useState } from "react";
 
 function useTokenBoundModal() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>("");
-  const [selectedOption, setSelectedOption] = useState<string>("");
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [value, setValue] = useState<string>("");
+	const [selectedOption, setSelectedOption] = useState<string>("");
+  const [walletSWO, setWalletSWO] = useState<WALLET_API.StarknetWindowObject | null>(null);
 
-  const openModal = () => {
-    setIsOpen(!isOpen);
-  };
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+	const openModal = () => {
+		setIsOpen(!isOpen);
+	};
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedOption(event.target.value);
-  };
+	const closeModal = () => {
+		setIsOpen(false);
+	};
 
-  const handleChangeInput = (event:React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
+	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		setSelectedOption(event.target.value);
+	};
 
-  const resetInputValues = () => {
-    setValue("");
-    setSelectedOption("");
-  };
+	const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setValue(event.target.value);
+	};
 
-  return {
-    isOpen,
-    openModal,
-    closeModal,
-    value,
-    selectedOption,
-    handleChange,
-    handleChangeInput,
-    resetInputValues
-  };
+  const handleWalletChange = (wallet: WALLET_API.StarknetWindowObject) => {
+    setWalletSWO(wallet)
+  }
+
+	const resetInputValues = () => {
+		setValue("");
+		setSelectedOption("");
+	};
+
+	return {
+		isOpen,
+		openModal,
+		closeModal,
+		value,
+		selectedOption,
+    walletSWO,
+		handleChange,
+		handleChangeInput,
+		resetInputValues,
+    handleWalletChange
+	};
 }
 
 export default useTokenBoundModal;
