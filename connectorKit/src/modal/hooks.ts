@@ -25,7 +25,7 @@ function useTokenBoundModal() {
   };
 
   const handleWalletChange = (wallet: WALLET_API.StarknetWindowObject) => {
-    console.log(wallet);
+    console.log(wallet, "hello");
     setWalletSWO(wallet);
   };
 

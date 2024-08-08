@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { Contract, defaultProvider, RpcProvider } from 'starknet';
-import { ConnectedStarknetWindowObject } from 'get-starknet-core';
+import {  StarknetWindowObject } from 'get-starknet-core';
 import {
   TokenboundConnector,
   TokenBoundModal,
@@ -13,7 +13,7 @@ const contractAddress =
   '0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300';
 
 function Dapp() {
-  const [connection, setConnection] = useState<ConnectedStarknetWindowObject>();
+  const [connection, setConnection] = useState<StarknetWindowObject>();
   const [account, setAccount] = useState();
   const [address, setAddress] = useState('');
   const [retrievedValue, setRetrievedValue] = useState('');
@@ -39,14 +39,16 @@ function Dapp() {
 
   const connectTBA = async () => {
     const connection = await tokenbound.connect();
+
+    console.log(connection, "jsjsjsjjs")
     closeModal();
     resetInputValues();
 
-    if (connection && connection.isConnected) {
-      setConnection(connection);
-      setAccount(connection.account);
-      setAddress(connection.selectedAddress);
-    }
+    // if (connection && connection.isConnected) {
+    //   setConnection(connection);
+    //   setAccount(connection.account);
+    //   setAddress(connection.selectedAddress);
+    // }
   };
 
   const disconnectTBA = async () => {

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { IModal, ValidWallet } from '../connector/types/modal';
-import '../index.css';
 import { scanObjectForWallets } from '../connector/helpers/wallet';
+import {isWalletObj} from "get-starknet-core";
+import '../index.css';
 
 function TokenBoundModal({
   isOpen,
@@ -16,10 +17,11 @@ function TokenBoundModal({
   handleChangeInput,
   onConnect,
 }: IModal) {
+	
   const [walletList, setWalletList] = useState<ValidWallet[]>([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await scanObjectForWallets(window);
+      const res = await scanObjectForWallets(window, isWalletObj);
       return res;
     };
     fetchData().then((wallets) => setWalletList(wallets));
