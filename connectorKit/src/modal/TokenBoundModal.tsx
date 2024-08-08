@@ -1,19 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { IModal } from '../connector/types/modal';
+import { IModal, ValidWallet } from '../connector/types/modal';
 import '../index.css';
+import { scanObjectForWallets } from '../connector/helpers/wallet';
 
 function TokenBoundModal({
   isOpen,
   closeModal,
   value,
+  walletSWO,
   selectedOption,
   handleChange,
+  handleWalletChange,
   handleChangeInput,
   onConnect,
 }: IModal) {
-  const options = ['argentX', 'braavos'];
+  const [walletList, setWalletList] = useState<ValidWallet[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await scanObjectForWallets(window);
+      return res;
+    };
+    fetchData().then((wallets) => setWalletList(wallets));
+    return () => {};
+  }, []);
+
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -72,18 +84,36 @@ function TokenBoundModal({
                       onChange={handleChangeInput}
                       className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
                     />
-                    <select
-                      onChange={handleChange}
-                      value={selectedOption}
-                      className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="id">Select parent wallet</option>
-                      {options.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+
+                    <p className="text-black py-3 font-bold text-sm">
+                      Connect to parent wallet
+                    </p>
+                    <div className="space-y-4 pb-5">
+                      {walletList.length > 0 &&
+                        walletList.map((wallet: ValidWallet, index: number) => {
+                          const iconW: string =
+                            typeof wallet.wallet.icon == 'string'
+                              ? wallet.wallet.icon
+                              : wallet.wallet.icon.light;
+                          return (
+                            <div className="w-full" key={index}>
+                              <button
+                                onClick={() =>
+                                  handleWalletChange(wallet.wallet)
+                                }
+                                className="flex items-center gap-5 rounded-lg bg-white text-black border border-gray-700 w-full px-5 py-2"
+                              >
+                                <img
+                                  className="w-5 h-5"
+                                  src={iconW}
+                                  alt="img"
+                                />
+                                {wallet.wallet.name} {wallet.wallet.version}
+                              </button>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
 
                   <button

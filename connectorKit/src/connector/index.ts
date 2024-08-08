@@ -1,7 +1,7 @@
-import { connect } from 'starknetkit';
-import { InjectedConnector } from 'starknetkit/injected';
-import { WebWalletConnector } from 'starknetkit/webwallet';
-import { ArgentMobileConnector } from 'starknetkit/argentMobile';
+// import { connect } from "starknetkit"
+// import { InjectedConnector } from "starknetkit/injected"
+// import { WebWalletConnector } from "starknetkit/webwallet"
+// import { ArgentMobileConnector } from "starknetkit/argentMobile"
 
 import type {
   AccountChangeEventHandler,
@@ -19,14 +19,15 @@ import {
 } from './constants';
 
 import { tokenbound_icon } from './constants';
+import { WALLET_API } from '@starknet-io/types-js';
 import { getTokenboundStarknetWindowObject } from './windowObject/TBAStarknetWindowObject';
 
 let _wallet: StarknetWindowObject | null = null;
 
 interface TokenboundConnectorOptions {
   tokenboundAddress: string;
-  parentAccountId: string;
-  provider?: ProviderInterface;
+  walletSWO: WALLET_API.StarknetWindowObject | null;
+  provider: ProviderInterface;
 }
 
 export class TokenboundConnector extends Connector {
@@ -150,57 +151,60 @@ export class TokenboundConnector extends Connector {
     this._wallet = null;
   }
 
-  private async connectParentAccount(id: string): Promise<AccountInterface> {
-    let parentWallet;
+  // private async connectParentAccount(id: string): Promise<AccountInterface> {
+  //     let parentWallet
 
-    if (id == 'argentMobile') {
-      const { wallet } = await connect({
-        connectors: [new ArgentMobileConnector()],
-      });
-      parentWallet = wallet;
-    } else if (id == 'argentWebWallet') {
-      const { wallet } = await connect({
-        connectors: [
-          new WebWalletConnector({
-            url: 'https://web.argent.xyz',
-          }),
-        ],
-      });
-      parentWallet = wallet;
-    } else {
-      const { wallet } = await connect({
-        connectors: [
-          new InjectedConnector({
-            options: { id: id },
-          }),
-        ],
-      });
-      parentWallet = wallet;
-    }
+  //     if(id == "argentMobile") {
+  //         const { wallet } = await connect({
+  //             connectors: [
+  //                 new ArgentMobileConnector()
+  //             ]
+  //         })
+  //         parentWallet = wallet
+  //     }
+  //     else if(id == "argentWebWallet") {
+  //         const { wallet } = await connect({
+  //             connectors: [
+  //                 new WebWalletConnector({
+  //                     url: "https://web.argent.xyz"
+  //                 })
+  //             ]
+  //         })
+  //         parentWallet = wallet
+  //     }
+  //     else {
+  //         const { wallet } = await connect({
+  //             connectors: [
+  //                 new InjectedConnector({
+  //                     options: {id: id}
+  //                 })
+  //             ]
+  //         })
+  //         parentWallet = wallet
+  //     }
 
-    return parentWallet?.account as AccountInterface;
-  }
+  //     return parentWallet?.account as AccountInterface
+  // }
 
   private async ensureWallet(): Promise<void> {
     const tokenboundAddress = this._options.tokenboundAddress;
-    const parentAccount = await this.connectParentAccount(
-      this._options.parentAccountId,
-    );
     const provider = this._options.provider;
+    const walletSWO = this._options.walletSWO;
+    if (walletSWO != null) {
+      const wallet = await getTokenboundStarknetWindowObject(
+        {
+          id: 'TBA',
+          icon: tokenbound_icon as string,
+          name: 'Tokenbound Account',
+          version: '1.0.0',
+        },
+        tokenboundAddress,
+        walletSWO,
+        provider,
+      );
 
-    const wallet = await getTokenboundStarknetWindowObject(
-      {
-        id: 'TBA',
-        icon: tokenbound_icon as string,
-        name: 'Tokenbound Account',
-        version: '1.0.0',
-      },
-      tokenboundAddress,
-      parentAccount,
-      provider,
-    );
-
-    _wallet = wallet ?? null;
-    this._wallet = _wallet;
+      _wallet = wallet ?? null;
+      this._wallet = _wallet;
+    }
   }
 }

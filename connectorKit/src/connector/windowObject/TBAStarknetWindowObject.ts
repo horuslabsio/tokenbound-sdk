@@ -5,10 +5,11 @@ import type {
   WalletEvents,
 } from 'get-starknet-core';
 
-import { AccountInterface, ProviderInterface, RpcProvider } from 'starknet';
+import { ProviderInterface, RpcProvider, WalletAccount } from 'starknet';
 
 import { TokenboundAccount } from './tokenboundAccount';
 import { mapChainToNodeUrl } from '../helpers/mapChainToNodeUrl';
+import { WALLET_API } from '@starknet-io/types-js';
 
 export const userEventHandlers: WalletEvents[] = [];
 export interface TokenboundStarknetWindowObject {
@@ -21,7 +22,7 @@ export interface TokenboundStarknetWindowObject {
 export const getTokenboundStarknetWindowObject = (
   options: TokenboundStarknetWindowObject,
   tokenboundAddress: string,
-  parentAccount: AccountInterface,
+  parentAccount: WALLET_API.StarknetWindowObject,
   provider?: ProviderInterface,
 ): StarknetWindowObject => {
   const nodeUrl = mapChainToNodeUrl('SN_MAIN');
@@ -89,13 +90,17 @@ export const getTokenboundStarknetWindowObject = (
   return wallet;
 };
 
-async function updateStarknetWindowObject(
+export async function updateStarknetWindowObject(
   wallet: StarknetWindowObject,
   provider: ProviderInterface,
   tokenboundAddress: string,
-  parentAccount: AccountInterface,
+  walletSWO: WALLET_API.StarknetWindowObject,
 ): Promise<ConnectedStarknetWindowObject> {
-  const chainId = await provider.getChainId();
+  const chainId = (
+    await walletSWO.request({ type: 'wallet_requestChainId' })
+  ).toString();
+
+  const walletAccount = new WalletAccount(provider, walletSWO);
 
   const valuesToAssign: Pick<
     ConnectedStarknetWindowObject,
@@ -116,7 +121,12 @@ async function updateStarknetWindowObject(
     isConnected: true,
     chainId,
     selectedAddress: tokenboundAddress,
-    account: new TokenboundAccount(provider, tokenboundAddress, parentAccount),
+    account: new TokenboundAccount(
+      provider,
+      walletSWO,
+      tokenboundAddress,
+      walletAccount,
+    ),
     provider,
   };
 

@@ -1,5 +1,6 @@
 import type { StarknetWindowObject } from 'get-starknet-core';
 import type { Connector, ConnectorIcons } from './connector';
+import { WALLET_API } from '@starknet-io/types-js';
 
 export type StoreVersion = 'chrome' | 'firefox' | 'edge';
 
@@ -18,6 +19,11 @@ export type ModalResult = {
   wallet?: StarknetWindowObject | null;
 };
 
+export type ValidWallet = {
+  wallet: WALLET_API.StarknetWindowObject;
+  isValid: boolean;
+};
+
 export type IModal = {
   isOpen: boolean;
   closeModal: () => void;
@@ -26,4 +32,6 @@ export type IModal = {
   handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   handleChangeInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onConnect: () => void;
+  walletSWO: WALLET_API.StarknetWindowObject | null;
+  handleWalletChange: (wallet: WALLET_API.StarknetWindowObject) => void;
 };
