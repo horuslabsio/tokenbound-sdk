@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 function useTokenBoundModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>("");
-  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [value, setValue] = useState<string>('');
+  const [selectedOption, setSelectedOption] = useState<string>('');
 
   const openModal = () => {
     setIsOpen(!isOpen);
@@ -17,13 +17,13 @@ function useTokenBoundModal() {
     setSelectedOption(event.target.value);
   };
 
-  const handleChangeInput = (event:React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
 
   const resetInputValues = () => {
-    setValue("");
-    setSelectedOption("");
+    setValue('');
+    setSelectedOption('');
   };
 
   return {
@@ -34,7 +34,7 @@ function useTokenBoundModal() {
     selectedOption,
     handleChange,
     handleChangeInput,
-    resetInputValues
+    resetInputValues,
   };
 }
 

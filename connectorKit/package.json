@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
+    "@starknet-io/types-js": "^0.7.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -35,7 +36,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "react-scripts test",
-    "clean": "rm -rf node_modules/"
+    "clean": "rm -rf node_modules/",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json}\"",
+    "format:fix": "prettier --write \"**/*.{ts,tsx,json}\""
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +59,10 @@
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "postcss": "^8.4.38",
+    "prettier": "^3.3.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "starknet": "^6.1.5",
     "tailwindcss": "^3.4.3",
     "terser": "^5.30.3",
     "typescript": "^5.1.6",
@@ -65,8 +72,8 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "starknet": "^6.1.5",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "starknet": "^6.1.5"
   }
 }

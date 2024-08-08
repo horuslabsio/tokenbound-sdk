@@ -1,8 +1,8 @@
-import { resolve } from 'path'
-import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
-import react from "@vitejs/plugin-react"
-import { libInjectCss } from 'vite-plugin-lib-inject-css'
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
+import react from '@vitejs/plugin-react';
+import { libInjectCss } from 'vite-plugin-lib-inject-css';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,15 +15,15 @@ export default defineConfig({
       fileName: 'tokenbound-connector',
     },
     rollupOptions: {
-      external: ["starknet", "react", "react-dom"],
+      external: ['starknet', 'react', 'react-dom'],
       output: {
         globals: {
-          react: "React",
-          "react-dom": "React-dom",
+          react: 'React',
+          'react-dom': 'React-dom',
         },
       },
     },
-    cssMinify: false
+    cssMinify: false,
   },
   plugins: [dts(), react(), libInjectCss()],
-})
+});

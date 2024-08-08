@@ -1,18 +1,22 @@
-import { useState } from "react";
-import "./App.css";
-import { Contract, RpcProvider } from "starknet";
-import { ConnectedStarknetWindowObject } from "get-starknet-core";
-import { TokenboundConnector, TokenBoundModal, useTokenBoundModal } from "../index";
+import { useState } from 'react';
+import './App.css';
+import { Contract, RpcProvider } from 'starknet';
+import { ConnectedStarknetWindowObject } from 'get-starknet-core';
+import {
+  TokenboundConnector,
+  TokenBoundModal,
+  useTokenBoundModal,
+} from '../index';
 
-import { ABI } from "./abis/abi";
+import { ABI } from './abis/abi';
 const contractAddress =
-  "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300";
+  '0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300';
 
 function Dapp() {
   const [connection, setConnection] = useState<ConnectedStarknetWindowObject>();
   const [account, setAccount] = useState();
-  const [address, setAddress] = useState("");
-  const [retrievedValue, setRetrievedValue] = useState("");
+  const [address, setAddress] = useState('');
+  const [retrievedValue, setRetrievedValue] = useState('');
 
   const {
     isOpen,
@@ -46,14 +50,14 @@ function Dapp() {
     await tokenbound.disconnect();
     setConnection(undefined);
     setAccount(undefined);
-    setAddress("");
+    setAddress('');
   };
 
   const increaseCounter = async () => {
     try {
       const contract = new Contract(ABI, contractAddress, account).typedv2(ABI);
       await contract.increment();
-      alert("you successfully increased the counter");
+      alert('you successfully increased the counter');
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +67,7 @@ function Dapp() {
     try {
       const contract = new Contract(ABI, contractAddress, account).typedv2(ABI);
       await contract.decrement();
-      alert("you sucessfully decreased the counter");
+      alert('you sucessfully decreased the counter');
     } catch (error) {
       console.log(error);
     }
@@ -71,11 +75,11 @@ function Dapp() {
 
   const getCounter = async () => {
     const provider = new RpcProvider({
-      nodeUrl: "https://starknet-mainnet.public.blastapi.io",
+      nodeUrl: 'https://starknet-mainnet.public.blastapi.io',
     });
     try {
       const contract = new Contract(ABI, contractAddress, provider).typedv2(
-        ABI
+        ABI,
       );
       const counter = await contract.get_current_count();
       setRetrievedValue(counter.toString());
@@ -87,7 +91,9 @@ function Dapp() {
   return (
     <div className="">
       <header className="">
-        <p><b>Address: {address ? address : ""}</b></p>
+        <p>
+          <b>Address: {address ? address : ''}</b>
+        </p>
 
         <div className="card">
           <p>Increase/Decrease Counter &rarr;</p>
@@ -127,7 +133,10 @@ function Dapp() {
           Connect Wallet
         </button>
       ) : (
-        <button className="text-white bg-[#0C0C4F] text-center border-gray-500 outline-none p-2 mt-3" onClick={disconnectTBA}>
+        <button
+          className="text-white bg-[#0C0C4F] text-center border-gray-500 outline-none p-2 mt-3"
+          onClick={disconnectTBA}
+        >
           Disconnect
         </button>
       )}

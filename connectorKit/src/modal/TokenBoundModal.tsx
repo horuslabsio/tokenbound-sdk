@@ -1,10 +1,18 @@
 import React from 'react';
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { IModal } from '../connector/types/modal';
-import "../index.css";
+import '../index.css';
 
-function TokenBoundModal({ isOpen, closeModal, value, selectedOption, handleChange, handleChangeInput, onConnect }: IModal) {
+function TokenBoundModal({
+  isOpen,
+  closeModal,
+  value,
+  selectedOption,
+  handleChange,
+  handleChangeInput,
+  onConnect,
+}: IModal) {
   const options = ['argentX', 'braavos'];
   return (
     <>
@@ -34,29 +42,39 @@ function TokenBoundModal({ isOpen, closeModal, value, selectedOption, handleChan
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className='flex items-center justify-between mb-4'>
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Connect with tokenbound
-                  </Dialog.Title>
+                  <div className="flex items-center justify-between mb-4">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Connect with tokenbound
+                    </Dialog.Title>
 
-                  <div onClick={closeModal} className='text-black cursor-pointer'>X</div>
+                    <div
+                      onClick={closeModal}
+                      className="text-black cursor-pointer"
+                    >
+                      X
+                    </div>
                   </div>
                   <div className="w-full">
-                    <label className='text-black mb-2 block' htmlFor="tba-address">Token bound address</label>
+                    <label
+                      className="text-black mb-2 block"
+                      htmlFor="tba-address"
+                    >
+                      Token bound address
+                    </label>
                     <input
                       type="text"
                       placeholder="TBA ADDRESS"
-                      id='tba-address'
+                      id="tba-address"
                       value={value}
                       onChange={handleChangeInput}
                       className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
                     />
                     <select
-                    onChange={handleChange}
-                    value={selectedOption}
+                      onChange={handleChange}
+                      value={selectedOption}
                       className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
                     >
                       <option value="id">Select parent wallet</option>
@@ -68,7 +86,12 @@ function TokenBoundModal({ isOpen, closeModal, value, selectedOption, handleChan
                     </select>
                   </div>
 
-                  <button onClick={onConnect} className='w-full text-white bg-[#0C0C4F] border-gray-500 outline-none p-2'>Connect with tokenbound account</button>
+                  <button
+                    onClick={onConnect}
+                    className="w-full text-white bg-[#0C0C4F] border-gray-500 outline-none p-2"
+                  >
+                    Connect with tokenbound account
+                  </button>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -76,7 +99,7 @@ function TokenBoundModal({ isOpen, closeModal, value, selectedOption, handleChan
         </Dialog>
       </Transition>
     </>
-  )
+  );
 }
 
 export default TokenBoundModal;
