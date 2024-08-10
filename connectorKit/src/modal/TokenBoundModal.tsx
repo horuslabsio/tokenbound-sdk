@@ -3,7 +3,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { IModal, ValidWallet } from '../connector/types/modal';
 import { scanObjectForWallets } from '../connector/helpers/wallet';
-import {isWalletObj} from "get-starknet-core";
 import '../index.css';
 
 function TokenBoundModal({
@@ -17,11 +16,10 @@ function TokenBoundModal({
   handleChangeInput,
   onConnect,
 }: IModal) {
-	
   const [walletList, setWalletList] = useState<ValidWallet[]>([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await scanObjectForWallets(window, isWalletObj);
+      const res = await scanObjectForWallets(window);
       return res;
     };
     fetchData().then((wallets) => setWalletList(wallets));
@@ -32,6 +30,7 @@ function TokenBoundModal({
     <>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

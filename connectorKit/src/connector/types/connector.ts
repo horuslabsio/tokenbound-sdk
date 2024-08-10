@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import type { StarknetWindowObject } from 'get-starknet-core';
-import { AccountInterface } from 'starknet';
+import { AccountInterface, ProviderInterface } from 'starknet';
 
 /** Connector icons, as base64 encoded svg. */
 export type ConnectorIcons = {

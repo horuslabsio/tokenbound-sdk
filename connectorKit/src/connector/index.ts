@@ -190,7 +190,9 @@ export class TokenboundConnector extends Connector {
     const tokenboundAddress = this._options.tokenboundAddress;
     const provider = this._options.provider;
     const walletSWO = this._options.walletSWO;
+
     if (walletSWO != null) {
+      await walletSWO.request({ type: 'wallet_requestAccounts'});       
       const wallet = await getTokenboundStarknetWindowObject(
         {
           id: 'TBA',
@@ -206,5 +208,7 @@ export class TokenboundConnector extends Connector {
       _wallet = wallet ?? null;
       this._wallet = _wallet;
     }
+
+    
   }
 }

@@ -24,9 +24,10 @@ function useTokenBoundModal() {
     setValue(event.target.value);
   };
 
-  const handleWalletChange = (wallet: WALLET_API.StarknetWindowObject) => {
-    console.log(wallet, "hello");
-    setWalletSWO(wallet);
+  const handleWalletChange = async (
+    walletSWO: WALLET_API.StarknetWindowObject,
+  ) => {
+    setWalletSWO(walletSWO);
   };
 
   const resetInputValues = () => {
