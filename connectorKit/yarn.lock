@@ -1699,18 +1699,6 @@
   resolved "https://registry.npmjs.org/@microsoft/tsdoc/-/tsdoc-0.14.2.tgz"
   integrity sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==
 
-"@module-federation/runtime@^0.1.2":
-  version "0.1.21"
-  resolved "https://registry.npmjs.org/@module-federation/runtime/-/runtime-0.1.21.tgz"
-  integrity sha512-/p4BhZ0SnjJuiL0wwu+FebFgIUJ9vM+oCY7CyprUHImyi/Y23ulI61WNWMVrKQGgdMoXQDQCL8RH4EnrVP2ZFw==
-  dependencies:
-    "@module-federation/sdk" "0.1.21"
-
-"@module-federation/sdk@0.1.21":
-  version "0.1.21"
-  resolved "https://registry.npmjs.org/@module-federation/sdk/-/sdk-0.1.21.tgz"
-  integrity sha512-r7xPiAm+O4e+8Zvw+8b4ToeD0D0VJD004nHmt+Y8r/l98J2eA6di72Vn1FeyjtQbCrFtiMw3ts/dlqtcmIBipw==
-
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
   resolved "https://registry.npmjs.org/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz"
@@ -5843,11 +5831,9 @@ get-port-please@^3.1.2:
   integrity sha512-Gxc29eLs1fbn6LQ4jSU4vXjlwyZhF5HsGuMAa7gqBP4Rw4yxxltyDUuF5MBclFzDTXO+ACchGQoeela4DSfzdQ==
 
 get-starknet-core@^3.1.0, get-starknet-core@^3.2.0:
-  version "3.3.2"
-  resolved "https://registry.npmjs.org/get-starknet-core/-/get-starknet-core-3.3.2.tgz"
-  integrity sha512-Q5JGyyuWM3Klbw56l8MX+/hvT7UyzuYk7qj1IEwABCNhx7p3Qzd5Y1PF22OyW8pd+3tKwhEMCoyN5vgsd1abTg==
-  dependencies:
-    "@module-federation/runtime" "^0.1.2"
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/get-starknet-core/-/get-starknet-core-3.2.0.tgz"
+  integrity sha512-SZhxtLlKoPKLZ2H3l9WIU7CiNmkL3qLWGksALmvZdAXa/9PykYfLtvIB5B8A2UZMpf2ojTZlWLfuo1KhgmVobA==
 
 get-starknet-core@^4.0.0-next.3:
   version "4.0.0"

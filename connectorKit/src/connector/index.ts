@@ -124,7 +124,6 @@ export class TokenboundConnector extends Connector {
     if (!this._wallet || !this.wallet.account || !this._wallet.provider) {
       throw new ConnectorNotConnectedError();
     }
-
     const chainIdHex = await this._wallet.provider.getChainId();
     const chainId = BigInt(chainIdHex);
     return chainId;
@@ -190,10 +189,9 @@ export class TokenboundConnector extends Connector {
     const tokenboundAddress = this._options.tokenboundAddress;
     const provider = this._options.provider;
     const walletSWO = this._options.walletSWO;
-
+    await walletSWO?.request({ type: "wallet_requestAccounts" });
     if (walletSWO != null) {
-      await walletSWO.request({ type: 'wallet_requestAccounts'});       
-      const wallet = await getTokenboundStarknetWindowObject(
+      const wallet = getTokenboundStarknetWindowObject(
         {
           id: 'TBA',
           icon: tokenbound_icon as string,
@@ -202,13 +200,12 @@ export class TokenboundConnector extends Connector {
         },
         tokenboundAddress,
         walletSWO,
-        provider,
+        provider
       );
-
       _wallet = wallet ?? null;
       this._wallet = _wallet;
     }
 
-    
+
   }
 }

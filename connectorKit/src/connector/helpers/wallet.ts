@@ -28,7 +28,6 @@ export async function scanObjectForWallets(
       return { wallet: wallet, isValid: isValid } as ValidWallet;
     }),
   );
-  console.log(validWallets);
   return validWallets;
 }
 const checkCompatibility = async (

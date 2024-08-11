@@ -99,9 +99,7 @@ export async function updateStarknetWindowObject(
   const chainId = (
     await walletSWO.request({ type: 'wallet_requestChainId' })
   ).toString();
-
   const walletAccount = new WalletAccount(provider, walletSWO);
-
   const valuesToAssign: Pick<
     ConnectedStarknetWindowObject,
     | 'id'

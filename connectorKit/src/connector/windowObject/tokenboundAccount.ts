@@ -11,7 +11,7 @@ export class TokenboundAccount extends WalletAccount {
   constructor(
     provider: ProviderInterface,
     walletSWO: WALLET_API.StarknetWindowObject,
-    public address: string,
+    public tokenboundAccountAddress: string,
     public walletAccount: WalletAccount,
   ) {
     super(provider, walletSWO);
@@ -20,7 +20,6 @@ export class TokenboundAccount extends WalletAccount {
   override execute = async (calls: Call[]) => {
     try {
       const transactions = Array.isArray(calls) ? calls : [calls];
-
       const txns = transactions.map((call) => ({
         contractAddress: call.contractAddress,
         entrypoint: call.entrypoint,
@@ -31,10 +30,14 @@ export class TokenboundAccount extends WalletAccount {
       }));
 
       let callToBeExecuted: Call = {
-        contractAddress: this.address,
+        contractAddress: this.tokenboundAccountAddress,
         entrypoint: '__execute__',
         calldata: CallData.compile({ txns }),
       };
+
+
+
+      console.log(this.walletAccount)
 
       return await this.walletAccount.execute(callToBeExecuted);
     } catch (error) {
