@@ -35,10 +35,6 @@ export class TokenboundAccount extends WalletAccount {
         calldata: CallData.compile({ txns }),
       };
 
-
-
-      console.log(this.walletAccount)
-
       return await this.walletAccount.execute(callToBeExecuted);
     } catch (error) {
       console.log(error);

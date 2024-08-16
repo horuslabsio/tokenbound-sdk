@@ -10,13 +10,12 @@ function TokenBoundModal({
   closeModal,
   value,
   walletSWO,
-  selectedOption,
-  handleChange,
   handleWalletChange,
   handleChangeInput,
   onConnect,
 }: IModal) {
   const [walletList, setWalletList] = useState<ValidWallet[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await scanObjectForWallets(window);
@@ -25,12 +24,10 @@ function TokenBoundModal({
     fetchData().then((wallets) => setWalletList(wallets));
     return () => {};
   }, []);
-
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
-          
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -58,9 +55,9 @@ function TokenBoundModal({
                   <div className="flex items-center justify-between mb-4">
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900"
+                      className="text-lg font-medium   leading-6 text-gray-900"
                     >
-                      Connect with tokenbound
+                      Connect with Tokenbound Account
                     </Dialog.Title>
 
                     <div
@@ -70,24 +67,24 @@ function TokenBoundModal({
                       X
                     </div>
                   </div>
-                  <div className="w-full">
+                  <div className="w-full py-5">
                     <label
-                      className="text-black mb-2 block"
+                      className="text-black text-sm mb-3 font-medium block"
                       htmlFor="tba-address"
                     >
-                      Token bound address
+                      TBA Address
                     </label>
                     <input
                       type="text"
-                      placeholder="TBA ADDRESS"
+                      placeholder="Your tokenbound account address?"
                       id="tba-address"
                       value={value}
                       onChange={handleChangeInput}
-                      className="w-full border border-gray-300 bg-white text-black rounded px-3 py-2 mb-3 focus:outline-none focus:border-blue-500"
+                      className="w-full border text-sm border-gray-300 bg-white text-black h-[50px] rounded-lg px-3 py-2 mb-1 focus:outline-none focus:border-blue-500"
                     />
 
-                    <p className="text-black py-3 font-bold text-sm">
-                      Connect to parent wallet
+                    <p className="text-black  py-3 font-medium text-sm">
+                      Select Parent Account
                     </p>
                     <div className="space-y-4 pb-5">
                       {walletList.length > 0 &&
@@ -97,32 +94,36 @@ function TokenBoundModal({
                               ? wallet.wallet.icon
                               : wallet.wallet.icon.light;
                           return (
-                            <div className="w-full" key={index}>
-                              <button
+                            <div className="w-full  h-[50px]" key={index}>
+                              <div
                                 onClick={() =>
                                   handleWalletChange(wallet.wallet)
                                 }
-                                className="flex items-center gap-5 rounded-lg bg-white text-black border border-gray-700 w-full px-5 py-2"
+                                className={`${walletSWO?.id == wallet.wallet.id ? 'bg-[#0C0C4F] text-white' : 'bg-white'} flex items-center cursor-pointer h-full text-sm  gap-10 rounded-lg text-black border border-gray-300 w-full px-5 py-2 hover:text-white hover:bg-[#0C0C4F]`}
                               >
                                 <img
-                                  className="w-5 h-5"
+                                  className="w-6 h-6"
                                   src={iconW}
                                   alt="img"
                                 />
-                                {wallet.wallet.name} {wallet.wallet.version}
-                              </button>
+                                <p className="text-center font-medium">
+                                  {wallet.wallet.name}{' '}
+                                </p>
+                              </div>
                             </div>
                           );
                         })}
                     </div>
                   </div>
 
-                  <button
-                    onClick={onConnect}
-                    className="w-full text-white bg-[#0C0C4F] border-gray-500 outline-none p-2"
-                  >
-                    Connect with tokenbound account
-                  </button>
+                  <div className="py-5">
+                    <button
+                      onClick={onConnect}
+                      className="w-full text-white bg-[#0C0C4F] rounded-xl h-[56px] border-gray-500 outline-none p-2"
+                    >
+                      Connect
+                    </button>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

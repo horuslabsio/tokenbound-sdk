@@ -1,12 +1,11 @@
-// import { connect } from "starknetkit"
-// import { InjectedConnector } from "starknetkit/injected"
-// import { WebWalletConnector } from "starknetkit/webwallet"
-// import { ArgentMobileConnector } from "starknetkit/argentMobile"
-
 import type {
   AccountChangeEventHandler,
   StarknetWindowObject,
 } from 'get-starknet-core';
+
+import { connect, connect as starknetkitConnect } from 'starknetkit';
+import { ArgentMobileConnector } from 'starknetkit/argentMobile';
+import { WebWalletConnector } from 'starknetkit/webwallet';
 
 import type { AccountInterface, ProviderInterface } from 'starknet';
 
@@ -21,6 +20,7 @@ import {
 import { tokenbound_icon } from './constants';
 import { WALLET_API } from '@starknet-io/types-js';
 import { getTokenboundStarknetWindowObject } from './windowObject/TBAStarknetWindowObject';
+import { InjectedConnector } from 'starknetkit/injected';
 
 let _wallet: StarknetWindowObject | null = null;
 
@@ -150,62 +150,44 @@ export class TokenboundConnector extends Connector {
     this._wallet = null;
   }
 
-  // private async connectParentAccount(id: string): Promise<AccountInterface> {
-  //     let parentWallet
+  private async connectParentAccount(id: string): Promise<AccountInterface> {
+    let parentWallet;
+    if (id == 'argentMobile') {
+      const { wallet } = await connect({
+        connectors: [new ArgentMobileConnector()],
+      });
 
-  //     if(id == "argentMobile") {
-  //         const { wallet } = await connect({
-  //             connectors: [
-  //                 new ArgentMobileConnector()
-  //             ]
-  //         })
-  //         parentWallet = wallet
-  //     }
-  //     else if(id == "argentWebWallet") {
-  //         const { wallet } = await connect({
-  //             connectors: [
-  //                 new WebWalletConnector({
-  //                     url: "https://web.argent.xyz"
-  //                 })
-  //             ]
-  //         })
-  //         parentWallet = wallet
-  //     }
-  //     else {
-  //         const { wallet } = await connect({
-  //             connectors: [
-  //                 new InjectedConnector({
-  //                     options: {id: id}
-  //                 })
-  //             ]
-  //         })
-  //         parentWallet = wallet
-  //     }
-
-  //     return parentWallet?.account as AccountInterface
-  // }
+      parentWallet = wallet;
+    }
+    return parentWallet?.account as AccountInterface;
+  }
 
   private async ensureWallet(): Promise<void> {
     const tokenboundAddress = this._options.tokenboundAddress;
     const provider = this._options.provider;
     const walletSWO = this._options.walletSWO;
-    await walletSWO?.request({ type: "wallet_requestAccounts" });
-    if (walletSWO != null) {
-      const wallet = getTokenboundStarknetWindowObject(
-        {
-          id: 'TBA',
-          icon: tokenbound_icon as string,
-          name: 'Tokenbound Account',
-          version: '1.0.0',
-        },
-        tokenboundAddress,
-        walletSWO,
-        provider
-      );
-      _wallet = wallet ?? null;
-      this._wallet = _wallet;
+
+    if (walletSWO?.id == 'argentMobile') {
+      const parentAccount = await this.connectParentAccount(walletSWO.id);
+      console.log(parentAccount);
+      //implementation for argentMobile is in progress
+    } else {
+      await walletSWO?.request({ type: 'wallet_requestAccounts' });
+      if (walletSWO != null) {
+        const wallet = getTokenboundStarknetWindowObject(
+          {
+            id: 'TBA',
+            icon: tokenbound_icon as string,
+            name: 'Tokenbound Account',
+            version: '1.0.0',
+          },
+          tokenboundAddress,
+          walletSWO,
+          provider,
+        );
+        _wallet = wallet ?? null;
+        this._wallet = _wallet;
+      }
     }
-
-
   }
 }

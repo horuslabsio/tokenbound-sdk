@@ -2,22 +2,40 @@
 
 import { WALLET_API } from '@starknet-io/types-js';
 import { ValidWallet } from '../types/modal';
+import { wallet } from 'starknet';
+import { ARGENT_X_ICON } from '../constants';
 
 export async function scanObjectForWallets(
   obj: Record<string, any>, // Browser window object
 ): Promise<ValidWallet[]> {
-  const AllObjectsNames: string[] = Object.getOwnPropertyNames(obj); // names of objects of level -1 of window
+  const AllObjectsNames: string[] = Object.getOwnPropertyNames(obj);
+  // names of objects of level -1 of window
   const listNames: string[] = AllObjectsNames.filter((name: string) =>
     name.startsWith('starknet'),
   );
+
   const Wallets: WALLET_API.StarknetWindowObject[] = Object.values(
     [...new Set(listNames)].reduce<
       Record<string, WALLET_API.StarknetWindowObject>
     >((wallets, name: string) => {
       const wallet = obj[name] as WALLET_API.StarknetWindowObject;
+
       if (!wallets[wallet.id]) {
         wallets[wallet.id] = wallet;
+
+        if (wallet.id === 'argentX') {
+          const newArgentWallet = { ...wallet, icon: ARGENT_X_ICON };
+          wallets[newArgentWallet.id] = newArgentWallet;
+          // Duplicate the wallet with a new ID
+          const duplicatedWallet = {
+            ...wallet,
+            id: 'argentMobile',
+            name: 'Argent (Mobile)',
+          };
+          wallets[duplicatedWallet.id] = duplicatedWallet;
+        }
       }
+
       return wallets;
     }, {}),
   );
@@ -28,8 +46,10 @@ export async function scanObjectForWallets(
       return { wallet: wallet, isValid: isValid } as ValidWallet;
     }),
   );
+
   return validWallets;
 }
+
 const checkCompatibility = async (
   myWalletSWO: WALLET_API.StarknetWindowObject,
 ) => {

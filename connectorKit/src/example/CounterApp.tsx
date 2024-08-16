@@ -24,8 +24,8 @@ function CounterApp() {
     openModal,
     closeModal,
     value,
-    selectedOption,
-    handleChange,
+    // selectedOption,
+    // handleChange,
     handleChangeInput,
     resetInputValues,
     handleWalletChange,
@@ -149,8 +149,8 @@ function CounterApp() {
           isOpen={isOpen}
           closeModal={closeModal}
           value={value}
-          selectedOption={selectedOption}
-          handleChange={handleChange}
+          // selectedOption={selectedOption}
+          // handleChange={handleChange}
           handleWalletChange={handleWalletChange}
           handleChangeInput={handleChangeInput}
           onConnect={connectTBA}

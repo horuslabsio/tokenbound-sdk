@@ -28,8 +28,6 @@ export type IModal = {
   isOpen: boolean;
   closeModal: () => void;
   value: string;
-  selectedOption: string;
-  handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   handleChangeInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onConnect: () => void;
   walletSWO: WALLET_API.StarknetWindowObject | null;

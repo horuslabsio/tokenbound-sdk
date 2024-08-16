@@ -1,5 +1,5 @@
 {
-  "name": "tokenbound-connector",
+  "name": "tokenbound-connector-v3",
   "version": "0.2.20",
   "description": "Connector for using dapps with your tokenbound accounts",
   "author": "Darlington Nnam",
@@ -9,12 +9,12 @@
     "dist"
   ],
   "types": "./dist/index.d.ts",
-  "main": "./dist/tokenbound-connector.umd.cjs",
-  "module": "./dist/tokenbound-connector.js",
+  "main": "./dist/tokenbound-connector-v3.umd.cjs",
+  "module": "./dist/tokenbound-connector-v3.js",
   "exports": {
     ".": {
-      "import": "./dist/tokenbound-connector.js",
-      "require": "./dist/tokenbound-connector.umd.cjs",
+      "import": "./dist/tokenbound-connector-v3.js",
+      "require": "./dist/tokenbound-connector-v3.umd.cjs",
       "types": "./dist/index.d.ts"
     }
   },
@@ -28,7 +28,6 @@
     "eventemitter3": "^5.0.1",
     "get-starknet-core": "^3.2.0",
     "react-scripts": "5.0.1",
-    "starknetkit": "^1.1.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -60,9 +59,6 @@
     "eslint-config-prettier": "^9.0.0",
     "postcss": "^8.4.38",
     "prettier": "^3.3.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "starknet": "^6.11.0",
     "tailwindcss": "^3.4.3",
     "terser": "^5.30.3",
     "typescript": "^5.1.6",
@@ -72,8 +68,8 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "starknet": "^6.1.5"
+    "starknet": "^6.9.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   }
 }

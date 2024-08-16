@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import { Contract, defaultProvider, RpcProvider } from 'starknet';
+import { Contract, RpcProvider } from 'starknet';
 // import { ConnectedStarknetWindowObject } from 'get-starknet-core';
 import {
   TokenboundConnector,
@@ -13,8 +13,7 @@ import { ConnectedStarknetWindowObject } from 'get-starknet-core';
 const contractAddress =
   '0x078630231fdd7406826aec40211263b7fa2533070cacf66ff7a729f7b1e16c59';
 
-export const myProviderUrl = "https://starknet-sepolia.public.blastapi.io"; // Mainnet
-
+export const myProviderUrl = 'https://starknet-sepolia.public.blastapi.io'; // Mainnet
 
 function TBAApp() {
   const [connection, setConnection] = useState<ConnectedStarknetWindowObject>();
@@ -31,8 +30,8 @@ function TBAApp() {
     openModal,
     closeModal,
     value,
-    selectedOption,
-    handleChange,
+    // selectedOption,
+    // handleChange,
     handleChangeInput,
     resetInputValues,
     handleWalletChange,
@@ -63,13 +62,11 @@ function TBAApp() {
     setAddress('');
   };
 
-
-
   const lock = async () => {
     try {
-      const contract = new Contract(TBAABI, contractAddress, account)
-      console.log(account, "account")
-      await contract.lock("78888888888");
+      const contract = new Contract(TBAABI, contractAddress, account);
+      console.log(account, 'account');
+      await contract.lock('78888888888');
       alert('locked');
     } catch (error) {
       console.log(error);
@@ -77,9 +74,8 @@ function TBAApp() {
   };
 
   const getOwner = async () => {
-
     try {
-      const contract = new Contract(TBAABI, contractAddress, provider)
+      const contract = new Contract(TBAABI, contractAddress, provider);
       const counter = await contract.owner();
       setRetrievedValue(counter.toString(16));
     } catch (error) {
@@ -90,16 +86,14 @@ function TBAApp() {
   return (
     <div className="">
       <header className="">
-        {
-          address && <p>
+        {address && (
+          <p>
             <b>Address: {address ? address : ''}</b>
           </p>
-
-        }
+        )}
         <div className="card">
           <p>TBA Test &rarr;</p>
           <div className="cardForm">
-
             <input
               type="submit"
               className="button"
@@ -142,8 +136,8 @@ function TBAApp() {
           isOpen={isOpen}
           closeModal={closeModal}
           value={value}
-          selectedOption={selectedOption}
-          handleChange={handleChange}
+          // selectedOption={selectedOption}
+          // handleChange={handleChange}
           handleWalletChange={handleWalletChange}
           handleChangeInput={handleChangeInput}
           onConnect={connectTBA}
