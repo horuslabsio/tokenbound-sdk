@@ -6,8 +6,6 @@ import {
     CreateAccountOptions, 
     AccountStatus, 
     Call, 
-    LockOptions, 
-    LockStatus, 
     GetOwnerOptions, 
     ERC20TransferOptions, 
     NFTTransferOptions
@@ -25,8 +23,6 @@ export type {
     CreateAccountOptions, 
     AccountStatus, 
     Call, 
-    LockOptions, 
-    LockStatus, 
     GetOwnerOptions, 
     ERC20TransferOptions, 
     NFTTransferOptions

@@ -13,12 +13,15 @@ export interface GetAccountOptions {
     tokenContract: string
     tokenId: string
     salt?: string
+    chain_id: string
 }
 
 export interface CreateAccountOptions {
     tokenContract: string
     tokenId: string
     salt?: string
+    chain_id: string
+    
 }
 
 export interface AccountStatus {
@@ -38,15 +41,6 @@ export interface Call {
     calldata: any[]
 }
 
-export interface LockOptions {
-    tbaAddress: string
-    duration_in_sec: number
-}
-
-export interface LockStatus {
-    locked: boolean
-    time_until_unlocks: number
-}
 
 export interface GetOwnerOptions {
     tbaAddress: string

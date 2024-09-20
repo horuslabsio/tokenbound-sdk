@@ -8,7 +8,6 @@ import {
 } from "starknet"
 
 import { 
-    LockOptions, 
     Call, 
     CreateAccountOptions, 
     GetAccountOptions, 
@@ -40,14 +39,13 @@ export class TokenboundClient {
         }
 
         account ? this.account = account : this.account = accountClient(jsonRPC, walletClient)
-
         this.jsonRPC = jsonRPC
         this.registryAddress = registryAddress
         this.implementationAddress = implementationAddress
     }
 
     public async getAccount(params: GetAccountOptions) {
-        const { tokenContract, tokenId, salt } = params
+        const { tokenContract, tokenId, salt, chain_id } = params
         const provider = getProvider(this.jsonRPC)
         const contract = new Contract(registryAbi, this.registryAddress, provider)
 
@@ -56,7 +54,8 @@ export class TokenboundClient {
                 this.implementationAddress,
                 tokenContract,
                 tokenId,
-                salt ? salt : tokenId
+                salt ? salt : tokenId,
+                chain_id
             )
             return address
         }
@@ -66,7 +65,8 @@ export class TokenboundClient {
     }
 
     public async createAccount(params: CreateAccountOptions) {
-        const { tokenContract, tokenId, salt } = params
+        const { tokenContract, tokenId, salt, chain_id } = params
+        
         const contract = new Contract(registryAbi, this.registryAddress, this.account)
 
         let salt_arg = salt ? salt : tokenId
@@ -75,13 +75,15 @@ export class TokenboundClient {
                 this.implementationAddress,
                 tokenContract,
                 tokenId,
-                salt_arg
+                salt_arg,
+                chain_id
             )
 
             return await this.getAccount({
                 tokenContract,
                 tokenId,
-                salt: salt_arg
+                salt: salt_arg,
+                chain_id
             })
         }
         catch (error) {
@@ -90,14 +92,15 @@ export class TokenboundClient {
     }
 
     public async checkAccountDeployment(params: GetAccountOptions) {
-        const { tokenContract, tokenId, salt } = params
+        const { tokenContract, tokenId, salt, chain_id } = params
         const provider = getProvider(this.jsonRPC)
 
         let salt_arg = salt ? salt : tokenId
         let address = await this.getAccount({
             tokenContract,
             tokenId,
-            salt: salt_arg
+            salt: salt_arg,
+            chain_id
         })
 
         try {
@@ -132,30 +135,6 @@ export class TokenboundClient {
         }
     }
 
-    public async lock(option: LockOptions) {
-        const { tbaAddress, duration_in_sec } = option
-        const contract = new Contract(accountAbi, tbaAddress, this.account)
-
-        try {
-            await contract.lock(duration_in_sec)
-        }
-        catch (error) {
-            throw error
-        }
-    }
-
-    public async is_locked(tbaAddress: string) {
-        const provider = getProvider(this.jsonRPC)
-        const contract = new Contract(accountAbi, tbaAddress, provider)
-
-        try {
-            let lock_status = await contract.is_locked()
-            return lock_status
-        }
-        catch (error) {
-            throw error
-        }
-    }
 
     public async getOwner(options: GetOwnerOptions) {
         let { tbaAddress, tokenContract, tokenId } = options
@@ -170,6 +149,7 @@ export class TokenboundClient {
         }
     }
     
+    
     public async getOwnerNFT(tbaAddress: string) {
         const contract = new Contract(accountAbi, tbaAddress, this.account)
 
@@ -183,8 +163,9 @@ export class TokenboundClient {
     }
 
     public async transferERC20(options: ERC20TransferOptions) {
-        const { tbaAddress, contractAddress, recipient, amount} = options
 
+        const { tbaAddress, contractAddress, recipient, amount} = options    
+                
         let call: Call = {
             to: contractAddress,
             selector: "0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e",
@@ -201,6 +182,9 @@ export class TokenboundClient {
             throw error
         }
     }
+
+
+
 
     public async transferNFT(options: NFTTransferOptions) {
         const { tbaAddress, contractAddress, tokenId, sender, recipient} = options
