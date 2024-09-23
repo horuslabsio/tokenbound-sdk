@@ -5,7 +5,7 @@ import {
   TokenboundClient,
   WalletClient,
   Call,
-} from "starknet-tokenbound-sdk";
+} from "starknet-tokenbound-sdk-v3";
 
 function App() {
 
@@ -114,12 +114,12 @@ function App() {
   const transferNFT = async () => {
 
     const NFT_CONTRACT =
-      "0x042e7815d9e90b7ea53f4550f74dc12207ed6a0faaef57ba0dbf9a66f3762d82";
+      "0x0604ad6c09792f7bed48433d72dede4e0338c777332722930fda8aa7e8633dce";
 
     const TOKEN_ID = "4";
 
     const recipient =
-      "0x01f0d3e6e3b1116fbf69dd670e5c079c8c3b6e5a789f00270ba049b6c22a0d3b";
+      "0x05662997723d56add3da71a86105788cb29b4e4e55325c2cc61fb600ac975d80";
 
     try {
       await tokenbound.transferNFT({
@@ -129,6 +129,7 @@ function App() {
         sender: account as string,
         recipient,
       });
+      alert("Transfer was successfully")
     } catch (error) {
       console.log(error);
     }
