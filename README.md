@@ -12,10 +12,9 @@
   </a>
 </p>
 
-## Available SDKs
+## Tokenbound Developmentkit
 
-### developmentKit
-Houses the Tokenbound SDK, a front-end library for interacting with tokenbound accounts on Starknet. The SDK provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing.
+A front-end library for interacting with tokenbound accounts on Starknet. The SDK provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing.
 
 
 ## Development
@@ -24,12 +23,7 @@ Houses the Tokenbound SDK, a front-end library for interacting with tokenbound a
 git clone git@github.com:horuslabsio/TBA-SDK.git
 ```
 
-2. Navigate into the SDK folder you intend to work on
-```
-cd developmentKit
-```
-
-3. Install dependencies
+2. Install dependencies
 ```
 npm install
 ```
@@ -44,5 +38,3 @@ npm run build
 npm run publish
 ```
 
-## API Reference
-Please check the individual SDK folders.
