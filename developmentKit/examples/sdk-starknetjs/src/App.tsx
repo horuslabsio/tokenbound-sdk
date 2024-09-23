@@ -5,7 +5,7 @@ import {
   TokenboundClient,
   WalletClient,
   Call,
-} from "starknet-tokenbound-sdk-v3";
+} from "starknet-tokenbound-sdk";
 
 function App() {
 
@@ -100,6 +100,7 @@ function App() {
         contractAddress: ETH_CONTRACT,
         recipient,
         amount: "150000000000000",
+
       });
 
       alert("Transfer was successfully")
@@ -107,10 +108,6 @@ function App() {
       console.log(error);
     }
   };
-
-
-  console.log(account)
-
 
 
   // transfer nft
@@ -188,6 +185,8 @@ function App() {
     getAccountOwner();
     getNFTOwner();
   }
+
+
 
   return (
     <div className="App">
