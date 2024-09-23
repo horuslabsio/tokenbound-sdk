@@ -119,7 +119,7 @@ export class TokenboundClient {
 
         let call: MultiCall = {
             contractAddress: tbaAddress,
-            entrypoint: '__execute__',
+            entrypoint: 'execute',
             calldata: CallData.compile({
                 calls
             })

@@ -17,10 +17,6 @@
 ### developmentKit
 Houses the Tokenbound SDK, a front-end library for interacting with tokenbound accounts on Starknet. The SDK provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing.
 
-### connectorKit
-Houses the Tokenbound Connectkit.
-
-The Tokenbound Connectkit enables users connect to existing Starknet dApps with their Tokenbound accounts.
 
 ## Development
 1. Clone repository
@@ -30,7 +26,6 @@ git clone git@github.com:horuslabsio/TBA-SDK.git
 
 2. Navigate into the SDK folder you intend to work on
 ```
-cd connectorKit
 cd developmentKit
 ```
 
