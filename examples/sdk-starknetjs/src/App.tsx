@@ -8,16 +8,15 @@ import {
 } from "starknet-tokenbound-sdk-v3";
 
 function App() {
-
   const [account, setAccount] = useState("");
   const [deployStatus, setDeployStatus] = useState<boolean>();
   const [accountClassHash, setAccountClassHash] = useState<string>();
   const [owner, setOwner] = useState<string>("");
   const [nftOwner, setNftOwner] = useState<string>();
   const [nftOwnerId, setNftOwnerId] = useState<string>();
+  const [txHash, setTxHash] = useState<string>("");
   const [lockStatus, setLockStatus] = useState<boolean>();
   const [timeUntilUnlocks, setTimeUntilUnlocks] = useState<number>();
-
 
   const walletClient: WalletClient = {
     address:
@@ -29,36 +28,37 @@ function App() {
     "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
 
   const implementationAddress: string =
-    "0x7396dc2e3ac3b50eac9b12447d7dcc2cfddef27405c680d46d6b13dae90d804";
+    "0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4";
 
   const options = {
     walletClient: walletClient,
     registryAddress: registryAddress,
     implementationAddress: implementationAddress,
+    chain_id: "SN_SEPOLIA",
+    version: "",
     jsonRPC: `https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/${process.env.REACT_APP_ALCHEMY_API_KEY}`,
   };
   const tokenbound = new TokenboundClient(options);
 
   // replace with a sample NFT your account owns on seepolia
   const tokenContract =
-    "0x03d03d5e61a1aec784dc03ad63a40d2cfdc506f6168dfa7dc694a3e6dd95219e";
-
-  const tokenId = "1";
-
+    "0x07e3eafdda82c886efa02b34d90f7e4a356bbe1eaa64d38f46225068cab0a604";
+  const tokenId = "4";
   // url to starkscan
   const url = `https://sepolia.starkscan.co/contract/${account}`;
 
   // deploy account
   const deployAccount = async () => {
-
     try {
-      await tokenbound.createAccount({
+      const result = await tokenbound.createAccount({
         tokenContract: tokenContract,
         tokenId: tokenId,
         salt: "3000000000",
-        chain_id: "SN_SEPOLIA",
       });
-      alert("Account deployed successfully")
+      setTxHash(result.transaction_hash.toString());
+      setAccount(result.account);
+      alert("Account deployed successfully");
+      console.log(result);
     } catch (error) {
       console.log(error);
     }
@@ -87,7 +87,6 @@ function App() {
 
   // transfer erc20
   const transferERC20 = async () => {
-
     const ETH_CONTRACT =
       "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
@@ -100,19 +99,16 @@ function App() {
         contractAddress: ETH_CONTRACT,
         recipient,
         amount: "150000000000000",
-
       });
 
-      alert("Transfer was successfully")
+      alert("Transfer was successfully");
     } catch (error) {
       console.log(error);
     }
   };
 
-
   // transfer nft
   const transferNFT = async () => {
-
     const NFT_CONTRACT =
       "0x0604ad6c09792f7bed48433d72dede4e0338c777332722930fda8aa7e8633dce";
 
@@ -129,7 +125,8 @@ function App() {
         sender: account as string,
         recipient,
       });
-      alert("Transfer was successfully")
+
+      alert("Transfer was successfully");
     } catch (error) {
       console.log(error);
     }
@@ -142,7 +139,6 @@ function App() {
         tokenContract: tokenContract,
         tokenId: tokenId,
         salt: "3000000000",
-        chain_id: "SN_SEPOLIA",
       });
 
       setAccount(num.toHex(account));
@@ -154,7 +150,6 @@ function App() {
         tokenContract,
         tokenId,
         salt: "3000000000",
-        chain_id: "SN_SEPOLIA",
       });
       setDeployStatus(status?.deployed);
       setAccountClassHash(status?.classHash);
@@ -186,8 +181,6 @@ function App() {
     getAccountOwner();
     getNFTOwner();
   }
-
-
 
   return (
     <div className="App">
