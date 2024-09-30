@@ -24,44 +24,44 @@ export const ERC_6551_DEPLOYMENTS: Standard6551Deployments = {
   SN_MAIN: {
     V2: {
       IMPLEMENTATION: {
-        ADDRESS: '0x2d25602551487c3f3354dd80d76d54383a243358',
+        ADDRESS: '0x45d67b8590561c9b54e14dd309c9f38c4e2c554dd59414021f9d079811621bd',
         ABI: erc6551AccountAbiV2 as Abi,
       },
       REGISTRY: {
-        ADDRESS: '0x02101dfB77FDE026414827Fdc604ddAF224F0921',
+        ADDRESS: '0x7f63abcad960f980c12d650b2cc4c27a8f63ee1f6eb36ea8286a946a2330c1b',
         ABI: erc6551RegistryAbiV2 as Abi,
       },
     },
     V3: {
       IMPLEMENTATION: {
-        ADDRESS: '0x41C8f39463A868d3A88af00cd0fe7102F30E44eC',
+        ADDRESS: '',
         ABI: erc6551AccountV3ABI as Abi,
       },
       REGISTRY: {
-        ADDRESS: '0x000000006551c19487814612e58FE06813775758',
+        ADDRESS: '',
         ABI: erc6551RegistryV3ABI as Abi,
       },
     },
   },
-  
+
   SN_SEPOLIA: {
     V2: {
       IMPLEMENTATION: {
-        ADDRESS: '0xYourSepoliaV2ImplementationAddress',
+        ADDRESS: '0x45d67b8590561c9b54e14dd309c9f38c4e2c554dd59414021f9d079811621bd',
         ABI: erc6551AccountAbiV2 as Abi,
       },
       REGISTRY: {
-        ADDRESS: '0xYourSepoliaV2RegistryAddress',
+        ADDRESS: '0x4101d3fa033024654083dd982273a300cb019b8cb96dd829267a4daf59f7b7e',
         ABI: erc6551RegistryAbiV2 as Abi,
       },
     },
     V3: {
       IMPLEMENTATION: {
-        ADDRESS: '0xYourSepoliaV3ImplementationAddress',
+        ADDRESS: '0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4',
         ABI: erc6551AccountV3ABI as Abi,
       },
       REGISTRY: {
-        ADDRESS: '0xYourSepoliaV3RegistryAddress',
+        ADDRESS: '0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580',
         ABI: erc6551RegistryV3ABI as Abi,
       },
     },

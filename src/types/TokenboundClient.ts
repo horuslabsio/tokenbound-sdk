@@ -9,7 +9,7 @@ export interface TokenboundClientOptions {
   implementationAddress: string;
   supportsV3: boolean;
   chain_id: string;
-  version: number;
+  version: string;
 }
 
 export interface GetAccountOptions {

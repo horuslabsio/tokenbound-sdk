@@ -10,10 +10,14 @@ import {
     ERC20TransferOptions, 
     NFTTransferOptions
 } from "./types/TokenboundClient"
+
+import { TBAChainID, TBVersion } from "./constants"
 import { WalletClient } from "./types/walletClient"
 
 export {
     TokenboundClient,
+    TBAChainID,
+    TBVersion
 }
 
 export type {

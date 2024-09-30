@@ -33,9 +33,8 @@ export class TokenboundClient {
   private registryAddress: string;
   private implementationAddress: string;
   private chain_id: string;
-  private version: number;
+  private version: string;
   public isInitialized: boolean = false;
-  private supportsV3: boolean = true
   public registryAbi: Abi; 
   public accountAbi: Abi; 
 
@@ -65,28 +64,23 @@ export class TokenboundClient {
 
     this.implementationAddress = implementationAddress ?? ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ADDRESS;
 
-    const isV2 = (version && version == TBVersion.V2);
-
     this.registryAbi = ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ABI; 
 
     this.accountAbi = ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ABI;
 
-    if (isV2) {
-      this.supportsV3 = false
-    }
 
-   
 
   }
 
 
   public async getAccount(params: GetAccountOptions) {
 
-    const { tokenContract, tokenId, salt } = params;
-    const provider = getProvider(this.jsonRPC);
-    
-    const contract = new Contract(this.registryAbi, this.registryAddress, provider);
+  console.log(this.chain_id, this.version)
 
+    const { tokenContract, tokenId, salt } = params;
+
+    const provider = getProvider(this.jsonRPC);
+    const contract = new Contract(this.registryAbi, this.registryAddress, provider);
     try {
       const address: BigNumberish = await contract.get_account(
         this.implementationAddress,

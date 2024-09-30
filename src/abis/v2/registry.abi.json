@@ -41,10 +41,6 @@
           {
             "name": "salt",
             "type": "core::felt252"
-          },
-          {
-            "name": "chain_id",
-            "type": "core::felt252"
           }
         ],
         "outputs": [
@@ -73,15 +69,31 @@
           {
             "name": "salt",
             "type": "core::felt252"
-          },
-          {
-            "name": "chain_id",
-            "type": "core::felt252"
           }
         ],
         "outputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "name": "total_deployed_accounts",
+        "type": "function",
+        "inputs": [
+          {
+            "name": "token_contract",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "token_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
           }
         ],
         "state_mutability": "view"
