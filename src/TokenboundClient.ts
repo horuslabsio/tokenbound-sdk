@@ -5,6 +5,7 @@ import {
   CallData,
   TypedData,
   cairo,
+  Abi,
 } from "starknet";
 
 import {
@@ -22,8 +23,9 @@ import {
 import { accountClient } from "./utils/account";
 import { getProvider } from "./utils/provider";
 
-import registryAbi from "./abis/registry.abi.json";
-import accountAbi from "./abis/account.abi.json";
+
+import { ERC_6551_DEPLOYMENTS, TBVersion } from "./constants";
+
 
 export class TokenboundClient {
   private account: AccountInterface;
@@ -31,8 +33,11 @@ export class TokenboundClient {
   private registryAddress: string;
   private implementationAddress: string;
   private chain_id: string;
-  private version: string;
+  private version: number;
   public isInitialized: boolean = false;
+  private supportsV3: boolean = true
+  public registryAbi: Abi; 
+  public accountAbi: Abi; 
 
   constructor(options: TokenboundClientOptions) {
     const {
@@ -41,8 +46,8 @@ export class TokenboundClient {
       jsonRPC,
       registryAddress,
       implementationAddress,
-      chain_id,
-      version,
+      chain_id = "SN_SEPOLIA",
+      version = TBVersion.V3,
     } = options;
 
     if (account && walletClient) {
@@ -52,16 +57,35 @@ export class TokenboundClient {
       ? (this.account = account)
       : (this.account = accountClient(jsonRPC, walletClient));
     this.jsonRPC = jsonRPC;
-    this.registryAddress = registryAddress;
-    this.implementationAddress = implementationAddress;
-    (this.chain_id = chain_id), (this.version = version);
+    this.isInitialized = true;
+    this.chain_id = chain_id;
+    this.version = version;
+
+    this.registryAddress = registryAddress ?? ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ADDRESS;
+
+    this.implementationAddress = implementationAddress ?? ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ADDRESS;
+
+    const isV2 = (version && version == TBVersion.V2);
+
+    this.registryAbi = ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ABI; 
+
+    this.accountAbi = ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ABI;
+
+    if (isV2) {
+      this.supportsV3 = false
+    }
+
+   
+
   }
 
 
   public async getAccount(params: GetAccountOptions) {
+
     const { tokenContract, tokenId, salt } = params;
     const provider = getProvider(this.jsonRPC);
-    const contract = new Contract(registryAbi, this.registryAddress, provider);
+    
+    const contract = new Contract(this.registryAbi, this.registryAddress, provider);
 
     try {
       const address: BigNumberish = await contract.get_account(
@@ -81,11 +105,10 @@ export class TokenboundClient {
   public async createAccount(
     { tokenContract, tokenId, salt }: CreateAccountOptions
   ): Promise<AccountResult> {
-    const contract = new Contract(registryAbi, this.registryAddress, this.account);
+    const contract = new Contract(this.registryAbi, this.registryAddress, this.account);
     const salt_arg = salt || tokenId;
-    console.log(this.version, "version")
 
-  
+
     try {
 
       const result = await contract.create_account(
@@ -95,9 +118,9 @@ export class TokenboundClient {
         salt_arg,
         this.chain_id
       );
-  
+
       const account = await this.getAccount({ tokenContract, tokenId, salt: salt_arg });
-  
+
       return {
         transaction_hash: result?.transaction_hash.toString(),
         account: account.toString(),
@@ -107,7 +130,7 @@ export class TokenboundClient {
       throw error;
     }
   }
-  
+
 
 
   public async checkAccountDeployment(params: GetAccountOptions) {
@@ -151,7 +174,7 @@ export class TokenboundClient {
 
   public async getOwner(options: GetOwnerOptions) {
     let { tbaAddress, tokenContract, tokenId } = options;
-    const contract = new Contract(accountAbi, tbaAddress, this.account);
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
       let owner = await contract.owner(tokenContract, tokenId);
       return owner;
@@ -161,7 +184,7 @@ export class TokenboundClient {
   }
 
   public async getOwnerNFT(tbaAddress: string) {
-    const contract = new Contract(accountAbi, tbaAddress, this.account);
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
       let ownerNFT = await contract.token();
       return ownerNFT;

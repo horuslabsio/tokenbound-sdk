@@ -7,8 +7,9 @@ export interface TokenboundClientOptions {
   jsonRPC: string;
   registryAddress: string;
   implementationAddress: string;
+  supportsV3: boolean;
   chain_id: string;
-  version: string;
+  version: number;
 }
 
 export interface GetAccountOptions {
