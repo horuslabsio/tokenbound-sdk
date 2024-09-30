@@ -35,8 +35,9 @@ export class TokenboundClient {
   private chain_id: string;
   private version: string;
   public isInitialized: boolean = false;
-  public registryAbi: Abi; 
-  public accountAbi: Abi; 
+  public registryAbi: Abi;
+  public accountAbi: Abi;
+  public supportsV3: boolean = true;
 
   constructor(options: TokenboundClientOptions) {
     const {
@@ -64,36 +65,47 @@ export class TokenboundClient {
 
     this.implementationAddress = implementationAddress ?? ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ADDRESS;
 
-    this.registryAbi = ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ABI; 
+    this.registryAbi = ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ABI;
 
     this.accountAbi = ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ABI;
 
+    const isV2 = (version && version === TBVersion.V2);
 
+    if (isV2) {
+      this.supportsV3 = false
+    }
 
   }
 
 
   public async getAccount(params: GetAccountOptions) {
 
-  console.log(this.chain_id, this.version)
-
     const { tokenContract, tokenId, salt } = params;
 
     const provider = getProvider(this.jsonRPC);
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
     try {
-      const address: BigNumberish = await contract.get_account(
+      const payload = [
         this.implementationAddress,
         tokenContract,
         tokenId,
         salt ? salt : tokenId,
-        this.chain_id
-      );
+      ];
+
+      if (this.supportsV3) {
+        payload.push(this.chain_id);
+      }
+
+      const address: BigNumberish = await contract.get_account(...payload);
+
       return address;
     } catch (error) {
       throw error;
     }
   }
+
+
+
 
 
   public async createAccount(
@@ -105,13 +117,18 @@ export class TokenboundClient {
 
     try {
 
-      const result = await contract.create_account(
+      const payload = [
         this.implementationAddress,
         tokenContract,
         tokenId,
         salt_arg,
-        this.chain_id
-      );
+      ];
+
+      if (this.supportsV3) {
+        payload.push(this.chain_id);
+      }
+
+      const result = await contract.create_account(...payload);
 
       const account = await this.getAccount({ tokenContract, tokenId, salt: salt_arg });
 
