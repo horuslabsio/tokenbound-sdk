@@ -7,7 +7,6 @@ export interface TokenboundClientOptions {
   jsonRPC: string;
   registryAddress: string;
   implementationAddress: string;
-  supportsV3: boolean;
   chain_id: string;
   version: string;
 }
@@ -52,6 +51,20 @@ export interface GetOwnerOptions {
   tokenId: string;
 }
 
+export interface GetHasPermissionOptions {
+  owner: string;
+  tbaAddress: string;
+  permissionedAddress: string;
+}
+
+
+export interface SetPermissionOptions {
+  tbaAddress: string;
+  permissionedAddresses: string[];
+  permissions: string[];
+}
+
+
 export interface ERC20TransferOptions {
   tbaAddress: string;
   contractAddress: string;
@@ -65,4 +78,21 @@ export interface NFTTransferOptions {
   tokenId: string;
   sender: string;
   recipient: string;
+}
+
+export interface GetIsLockedOptions {
+  tbaAddress: string;
+  tokenContract: string;
+  tokenId: string;
+}
+
+export interface LockAccountOptions {
+  tbaAddress: string;
+  lockUntill: string;
+}
+
+
+export interface UpgradeOptions {
+  tbaAddress: string;
+  newClassHash: string;
 }
