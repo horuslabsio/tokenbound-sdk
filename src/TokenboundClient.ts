@@ -18,13 +18,18 @@ import {
   ERC20TransferOptions,
   NFTTransferOptions,
   MultiCall,
+  GetHasPermissionOptions,
+  GetIsLockedOptions,
+  SetPermissionOptions,
+  LockAccountOptions,
+  UpgradeOptions,
 } from "./types/TokenboundClient";
 
 import { accountClient } from "./utils/account";
 import { getProvider } from "./utils/provider";
 
 
-import { ERC_6551_DEPLOYMENTS, TBVersion } from "./constants";
+import { ERC_6551_DEPLOYMENTS, TBAVersion } from "./constants";
 
 
 export class TokenboundClient {
@@ -47,7 +52,7 @@ export class TokenboundClient {
       registryAddress,
       implementationAddress,
       chain_id = "SN_SEPOLIA",
-      version = TBVersion.V3,
+      version = TBAVersion.V3,
     } = options;
 
     if (account && walletClient) {
@@ -69,7 +74,7 @@ export class TokenboundClient {
 
     this.accountAbi = ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ABI;
 
-    const isV2 = (version && version === TBVersion.V2);
+    const isV2 = (version && version === TBAVersion.V2);
 
     if (isV2) {
       this.supportsV3 = false
@@ -79,11 +84,10 @@ export class TokenboundClient {
 
 
   public async getAccount(params: GetAccountOptions) {
-
     const { tokenContract, tokenId, salt } = params;
-
     const provider = getProvider(this.jsonRPC);
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
+
     try {
       const payload = [
         this.implementationAddress,
@@ -95,9 +99,7 @@ export class TokenboundClient {
       if (this.supportsV3) {
         payload.push(this.chain_id);
       }
-
       const address: BigNumberish = await contract.get_account(...payload);
-
       return address;
     } catch (error) {
       throw error;
@@ -105,18 +107,13 @@ export class TokenboundClient {
   }
 
 
-
-
-
   public async createAccount(
     { tokenContract, tokenId, salt }: CreateAccountOptions
   ): Promise<AccountResult> {
     const contract = new Contract(this.registryAbi, this.registryAddress, this.account);
     const salt_arg = salt || tokenId;
-
-
+    console.log(this.version)
     try {
-
       const payload = [
         this.implementationAddress,
         tokenContract,
@@ -127,7 +124,6 @@ export class TokenboundClient {
       if (this.supportsV3) {
         payload.push(this.chain_id);
       }
-
       const result = await contract.create_account(...payload);
 
       const account = await this.getAccount({ tokenContract, tokenId, salt: salt_arg });
@@ -141,8 +137,6 @@ export class TokenboundClient {
       throw error;
     }
   }
-
-
 
   public async checkAccountDeployment(params: GetAccountOptions) {
     const { tokenContract, tokenId, salt } = params;
@@ -164,6 +158,7 @@ export class TokenboundClient {
     }
   }
 
+
   public async execute(tbaAddress: string, calls: Call[]) {
     const provider = getProvider(this.jsonRPC);
     let call: MultiCall = {
@@ -182,6 +177,7 @@ export class TokenboundClient {
       throw error;
     }
   }
+
 
   public async getOwner(options: GetOwnerOptions) {
     let { tbaAddress, tokenContract, tokenId } = options;
@@ -252,4 +248,60 @@ export class TokenboundClient {
       throw error;
     }
   }
+
+
+  public async getPermission(options: GetHasPermissionOptions) {
+    let { tbaAddress, owner, permissionedAddress } = options;
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    try {
+
+      return await contract.has_permission(owner, permissionedAddress);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async setPermission(options: SetPermissionOptions) {
+    let { tbaAddress, permissionedAddresses, permissions } = options;
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    try {
+      return await contract.set_permission(permissionedAddresses, permissions);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async isLocked(options: GetIsLockedOptions) {
+    let { tbaAddress } = options;
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    try {
+      return await contract.is_locked();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async lock(options: LockAccountOptions ) {
+    let { tbaAddress, lockUntill } = options;
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    try {
+      return await contract.lock(lockUntill);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+  public async upgrade(options: UpgradeOptions ) {
+    let { tbaAddress, newClassHash } = options;
+    const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    try {
+      return await contract.upgrade(newClassHash);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+
 }
