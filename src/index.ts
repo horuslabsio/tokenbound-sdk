@@ -14,7 +14,6 @@ import {
     UpgradeOptions,
     LockAccountOptions,
     GetIsLockedOptions,
-    
 } from "./types/TokenboundClient"
 
 import { TBAChainID, TBAVersion } from "./constants"

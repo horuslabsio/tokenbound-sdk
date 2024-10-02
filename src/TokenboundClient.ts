@@ -84,8 +84,11 @@ export class TokenboundClient {
 
 
   public async getAccount(params: GetAccountOptions) {
+    
     const { tokenContract, tokenId, salt } = params;
+
     const provider = getProvider(this.jsonRPC);
+
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
 
     try {
@@ -254,7 +257,6 @@ export class TokenboundClient {
     let { tbaAddress, owner, permissionedAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
-
       return await contract.has_permission(owner, permissionedAddress);
     } catch (error) {
       throw error;

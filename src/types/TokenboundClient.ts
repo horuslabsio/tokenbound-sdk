@@ -82,8 +82,6 @@ export interface NFTTransferOptions {
 
 export interface GetIsLockedOptions {
   tbaAddress: string;
-  tokenContract: string;
-  tokenId: string;
 }
 
 export interface LockAccountOptions {
