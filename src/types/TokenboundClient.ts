@@ -47,8 +47,6 @@ export interface Call {
 
 export interface GetOwnerOptions {
   tbaAddress: string;
-  tokenContract: string;
-  tokenId: string;
 }
 
 export interface GetHasPermissionOptions {
@@ -61,7 +59,7 @@ export interface GetHasPermissionOptions {
 export interface SetPermissionOptions {
   tbaAddress: string;
   permissionedAddresses: string[];
-  permissions: string[];
+  permissions: boolean[];
 }
 
 
@@ -86,7 +84,7 @@ export interface GetIsLockedOptions {
 
 export interface LockAccountOptions {
   tbaAddress: string;
-  lockUntill: string;
+  lockUntill: number;
 }
 
 

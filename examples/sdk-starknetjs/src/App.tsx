@@ -20,7 +20,8 @@ function App() {
   const [nftOwnerId, setNftOwnerId] = useState<string>();
   const [txHash, setTxHash] = useState<string>("");
   const [lockStatus, setLockStatus] = useState<boolean>();
-  const [timeUntilUnlocks, setTimeUntilUnlocks] = useState<number>();
+  const [permissionStatus, setPermissionStatus] = useState<boolean | null>();
+  const [timeUntilUnlocks, setTimeUntilUnlocks] = useState<string>();
 
   const walletClient: WalletClient = {
     address:
@@ -31,13 +32,14 @@ function App() {
   const registryAddress: string = "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
 
   const implementationAddress: string = "0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4";
+  const testPermissionedAddr: string = "0x05662997723d56add3da71a86105788cb29b4e4e55325c2cc61fb600ac975d80"
 
   const options = {
     walletClient: walletClient,
     registryAddress: registryAddress,
     implementationAddress: implementationAddress,
     chain_id: TBAChainID.sepolia,
-    version: TBAVersion.V3,
+    version: TBAVersion.V2,
     jsonRPC: `https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/${process.env.REACT_APP_ALCHEMY_API_KEY}`,
   };
   const tokenbound = new TokenboundClient(options);
@@ -131,32 +133,47 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    // get tokenbound account
-    const getAccount = async () => {
-      const account = await tokenbound.getAccount({
-        tokenContract: tokenContract,
-        tokenId: tokenId,
-        salt: "10000000000",
+  const lockAccount = async () => {
+    try {
+      await tokenbound.lock({
+        tbaAddress: account,
+        lockUntill: 1728057939
       });
+      alert("Account was locked successfully");
+    } catch (error) {
+      console.log(error, "lock");
+    }
+  };
 
-      setAccount(num.toHex(account));
-    };
-    const getDeploymentStatus = async () => {
-      const status = await tokenbound.checkAccountDeployment({
-        tokenContract,
-        tokenId,
-        salt: "10000000000",
+  const upgradeAccount = async () => {
+    try {
+      await tokenbound.upgrade({
+        newClassHash: "",
+        tbaAddress: account
       });
+      alert("Account was upgraded successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
-      setDeployStatus(status?.deployed);
-      setAccountClassHash(status?.classHash);
-    };
+  const setPermissions = async () => {
+    try {
+      await tokenbound.setPermission({
+        tbaAddress: account,
+        permissionedAddresses: [testPermissionedAddr],
+        permissions: [true]
+      });
+      alert("Permissions added successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    getAccount();
-    getDeploymentStatus();
-  }, [tokenContract]);
+
+
+
 
 
   const getAccountOwner = async () => {
@@ -180,16 +197,55 @@ function App() {
         const isLocked = await tokenbound.isLocked({
           tbaAddress: account,
         });
-
-        console.log(isLocked[0])
         setLockStatus(Boolean(isLocked[0]))
-        setTimeUntilUnlocks(Number(isLocked[1]))
+        setTimeUntilUnlocks(isLocked[1].toString())
       };
+      const getAccountPermissions = async () => {
+        const permission = await tokenbound.getPermission({
+          tbaAddress: account,
+          owner: owner,
+          permissionedAddress: testPermissionedAddr
+        });
 
+        if (permission != null) {
+          setPermissionStatus(permission)
+        }
+      }
+      getAccountPermissions();
       getLockStatus();
-    }
-  }, [account]);
 
+    };
+  }, [account, owner]);
+
+
+
+
+
+  useEffect(() => {
+    const getAccount = async () => {
+      const account = await tokenbound.getAccount({
+        tokenContract: tokenContract,
+        tokenId: tokenId,
+        salt: "9000000000",
+      });
+
+      setAccount(num.toHex(account));
+    };
+    const getDeploymentStatus = async () => {
+      const status = await tokenbound.checkAccountDeployment({
+        tokenContract,
+        tokenId,
+        salt: "10000000000",
+      });
+
+
+      setDeployStatus(status?.deployed);
+      setAccountClassHash(status?.classHash);
+    };
+
+    getAccount();
+    getDeploymentStatus();
+  }, [tokenContract]);
 
 
   if (deployStatus) {
@@ -197,18 +253,16 @@ function App() {
     getNFTOwner();
   }
 
-
-
   return (
     <div className="">
       <section className="App-header py-10">
         <h1 className="my-2 text-gray-300">Testing Token bound SDK</h1>
         <div className="space-y-4 py-10">
           <div className=" flex gap-2">
-            <p className="text-[18px]" >NFT Contract:</p> 
+            <p className="text-[18px]" >NFT Contract:</p>
             <FormatAddress address={tokenContract} />
-            
-            </div>
+
+          </div>
 
           <p className="text-lg">Token ID: <span className="text-bold">{tokenId}</span></p>
           <div className="flex items-center gap-2"  >
@@ -225,6 +279,10 @@ function App() {
           <p className="text-lg">
             Locked Status: [Status: {lockStatus?.toString()}, Time until unlocks:{" "}
             {timeUntilUnlocks} secs]
+          </p>
+          <p className="text-lg">
+            Permission Status: [Status: {permissionStatus?.toString()}]
+
           </p>
           <div className="flex items-center gap-2">
             <p className="text-lg">Account Owner:</p>
@@ -264,11 +322,36 @@ function App() {
           >
             send ERC20
           </button>
+
           <button
             onClick={transferNFT}
             className="bg-yellow-500 text-medium rounded-lg px-2 py-2"
           >
             send NFT
+          </button>
+
+
+          <button
+            onClick={lockAccount}
+            className="bg-yellow-500 text-medium rounded-lg px-2 py-2"
+          >
+            Lock
+          </button>
+
+
+          <button
+            onClick={upgradeAccount}
+            className="bg-orange-500 text-medium rounded-lg px-2 py-2"
+          >
+            Upgrade
+          </button>
+
+
+          <button
+            onClick={setPermissions}
+            className="bg-orange-500 text-medium rounded-lg px-2 py-2"
+          >
+            Set Permissions
           </button>
 
         </div>

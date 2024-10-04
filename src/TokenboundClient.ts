@@ -6,6 +6,7 @@ import {
   TypedData,
   cairo,
   Abi,
+  num,
 } from "starknet";
 
 import {
@@ -84,10 +85,12 @@ export class TokenboundClient {
 
 
   public async getAccount(params: GetAccountOptions) {
-    
+
     const { tokenContract, tokenId, salt } = params;
 
     const provider = getProvider(this.jsonRPC);
+
+    console.log(this.version)
 
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
 
@@ -115,7 +118,6 @@ export class TokenboundClient {
   ): Promise<AccountResult> {
     const contract = new Contract(this.registryAbi, this.registryAddress, this.account);
     const salt_arg = salt || tokenId;
-    console.log(this.version)
     try {
       const payload = [
         this.implementationAddress,
@@ -128,12 +130,11 @@ export class TokenboundClient {
         payload.push(this.chain_id);
       }
       const result = await contract.create_account(...payload);
-
       const account = await this.getAccount({ tokenContract, tokenId, salt: salt_arg });
 
       return {
         transaction_hash: result?.transaction_hash.toString(),
-        account: account.toString(),
+        account: num.toHex(account),
       };
 
     } catch (error) {
@@ -183,10 +184,10 @@ export class TokenboundClient {
 
 
   public async getOwner(options: GetOwnerOptions) {
-    let { tbaAddress, tokenContract, tokenId } = options;
+    let { tbaAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
-      let owner = await contract.owner(tokenContract, tokenId);
+      let owner = await contract.owner();
       return owner;
     } catch (error) {
       throw error;
@@ -257,6 +258,7 @@ export class TokenboundClient {
     let { tbaAddress, owner, permissionedAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
+      if (!this.supportsV3) return null
       return await contract.has_permission(owner, permissionedAddress);
     } catch (error) {
       throw error;
@@ -267,6 +269,7 @@ export class TokenboundClient {
     let { tbaAddress, permissionedAddresses, permissions } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
+      if (!this.supportsV3) return null
       return await contract.set_permission(permissionedAddresses, permissions);
     } catch (error) {
       throw error;
@@ -283,7 +286,7 @@ export class TokenboundClient {
     }
   }
 
-  public async lock(options: LockAccountOptions ) {
+  public async lock(options: LockAccountOptions) {
     let { tbaAddress, lockUntill } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
@@ -294,10 +297,11 @@ export class TokenboundClient {
   }
 
 
-  public async upgrade(options: UpgradeOptions ) {
+  public async upgrade(options: UpgradeOptions) {
     let { tbaAddress, newClassHash } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
+      if (!this.supportsV3) return null
       return await contract.upgrade(newClassHash);
     } catch (error) {
       throw error;
