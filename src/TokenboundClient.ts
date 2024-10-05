@@ -28,9 +28,7 @@ import {
 import { accountClient } from "./utils/account";
 import { getProvider } from "./utils/provider";
 
-
 import { ERC_6551_DEPLOYMENTS, TBAVersion } from "./constants";
-
 
 export class TokenboundClient {
   private account: AccountInterface;
@@ -67,11 +65,8 @@ export class TokenboundClient {
     this.version = version;
 
     this.registryAddress = registryAddress ?? ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ADDRESS;
-
     this.implementationAddress = implementationAddress ?? ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ADDRESS;
-
     this.registryAbi = ERC_6551_DEPLOYMENTS[chain_id][version].REGISTRY.ABI;
-
     this.accountAbi = ERC_6551_DEPLOYMENTS[chain_id][version].IMPLEMENTATION.ABI;
 
     const isV2 = (version && version === TBAVersion.V2);
@@ -79,16 +74,12 @@ export class TokenboundClient {
     if (isV2) {
       this.supportsV3 = false
     }
-
   }
-
 
   public async getAccount(params: GetAccountOptions) {
     
     const { tokenContract, tokenId, salt } = params;
-
     const provider = getProvider(this.jsonRPC);
-
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
 
     try {
@@ -108,7 +99,6 @@ export class TokenboundClient {
       throw error;
     }
   }
-
 
   public async createAccount(
     { tokenContract, tokenId, salt }: CreateAccountOptions
@@ -161,7 +151,6 @@ export class TokenboundClient {
     }
   }
 
-
   public async execute(tbaAddress: string, calls: Call[]) {
     const provider = getProvider(this.jsonRPC);
     let call: MultiCall = {
@@ -180,7 +169,6 @@ export class TokenboundClient {
       throw error;
     }
   }
-
 
   public async getOwner(options: GetOwnerOptions) {
     let { tbaAddress, tokenContract, tokenId } = options;
@@ -252,7 +240,6 @@ export class TokenboundClient {
     }
   }
 
-
   public async getPermission(options: GetHasPermissionOptions) {
     let { tbaAddress, owner, permissionedAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
@@ -293,7 +280,6 @@ export class TokenboundClient {
     }
   }
 
-
   public async upgrade(options: UpgradeOptions ) {
     let { tbaAddress, newClassHash } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
@@ -303,7 +289,4 @@ export class TokenboundClient {
       throw error;
     }
   }
-
-
-
 }

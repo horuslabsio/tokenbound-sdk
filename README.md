@@ -17,11 +17,11 @@
 This repo houses the Tokenbound SDK, a front-end library for interacting with ERC-6551 accounts on Starknet. The SDK provides an interface for interacting with tokenbound accounts, enabling operations like account creation, transaction execution, token transfers (including ERC-721, ERC-1155, and ERC-20 tokens), and message signing. Any onchain action you can perform with your EOA wallet can be done with your NFT's Tokenbound account.
 
 Packages
-src - SDK client for all projects, signing enabled via Starknet.js.
+`src` - SDK client for all projects, signing enabled via Starknet.js.
 
 Examples
-examples/sdk-starknetjs - An example app using the tokenbound SDK in a react project with starknetjs
-examples/sdk-starknetjs-starknetkit-starknet-react - An example app using the tokenbound SDK in a react project with starknetjs, starknetkit and starknet-react
+`examples/sdk-starknetjs` - An example app using the tokenbound SDK in a react project with starknetjs
+`examples/sdk-starknetjs-starknetkit-starknet-react` - An example app using the tokenbound SDK in a react project with starknetjs, starknetkit and starknet-react
 
 Development
 Clone repository and install dependencies:
@@ -46,8 +46,7 @@ The TokenboundClient class provides an interface for interacting with tokenbound
 The client is instantiated with an object containing two parameters:
 
 #### Parameter	
-One of `account <AccountInterface>` or `walletClient <WalletClient>	mandatory`
-Use either starknetkit or a combination of starknetkit and starknet-react to use the `account` object, and use a private key imported from any wallet to create the `walletClient` object.
+One of `account <AccountInterface>` or `walletClient <WalletClient>` is	mandatory.
 
 ### Standard configuration with WalletClient
 To configure tokenbound using walletClient:
@@ -90,7 +89,7 @@ const tokenbound = new TokenboundClient(options)
 For easy reference, we've prepared code examples for a few simple SDK interactions.
 
 ## TokenboundClient SDK Methods
-The TokenboundClient enables creation of and interaction with Tokenbound accounts:
+The `TokenboundClient` enables creation of and interaction with Tokenbound accounts:
 
 ### createAccount
 Creates a tokenbound account for an NFT. createAccount adds the account to the registry and initializes it for use. Prior to account creation, the address can already receive assets. Deploying the account allows the NFT's owner to interact with the account.
