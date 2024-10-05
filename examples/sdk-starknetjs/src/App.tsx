@@ -219,8 +219,6 @@ function App() {
 
 
 
-
-
   useEffect(() => {
     const getAccount = async () => {
       const account = await tokenbound.getAccount({

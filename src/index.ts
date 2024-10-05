@@ -39,6 +39,5 @@ export type {
     SetPermissionOptions,
     UpgradeOptions,
     LockAccountOptions,
-    GetIsLockedOptions,
-    
+    GetIsLockedOptions,  
 }
