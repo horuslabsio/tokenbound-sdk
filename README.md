@@ -19,9 +19,9 @@ This repo houses the Tokenbound SDK, a front-end library for interacting with ER
 Packages
 `src` - SDK client for all projects, signing enabled via Starknet.js.
 
-Examples
-`examples/sdk-starknetjs` - An example app using the tokenbound SDK in a react project with starknetjs
-`examples/sdk-starknetjs-starknetkit-starknet-react` - An example app using the tokenbound SDK in a react project with starknetjs, starknetkit and starknet-react
+## Examples
+- `examples/sdk-starknetjs` - An example app using the tokenbound SDK in a react project with starknetjs
+- `examples/sdk-starknetjs-starknetkit-starknet-react` - An example app using the tokenbound SDK in a react project with starknetjs, starknetkit and starknet-react
 
 Development
 Clone repository and install dependencies:
