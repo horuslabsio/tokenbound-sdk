@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { num } from "starknet";
+import { cairo, num } from "starknet";
 import {
   TokenboundClient,
   WalletClient,
@@ -28,25 +28,18 @@ function App() {
     privateKey: process.env.REACT_APP_PRIVATE_KEY!,
   };
 
-  // const registryAddress: string = "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
-
-  const implementationAddress: string = "";
-  const registryAddress: string = "";
   const V2_SALT = "240000000000"
 
-
-  // const implementationAddress: string = "0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4";
   const testPermissionedAddr: string = "0x05662997723d56add3da71a86105788cb29b4e4e55325c2cc61fb600ac975d80"
 
   const options = {
     walletClient: walletClient,
     chain_id: TBAChainID.sepolia,
-    version: TBAVersion.V2,
+    version: TBAVersion.V3,
     jsonRPC: `https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/${process.env.REACT_APP_ALCHEMY_API_KEY}`,
   };
   const tokenbound = new TokenboundClient(options);
 
-  //  replace with a sample NFT your account owns on seepolia
   const tokenContract = "0x004dca9ec1ed78ce5cddbbcec63d3620514ae66bc73a3942d48a011bad452ffe";
   const tokenId = "2";
   const url = `https://sepolia.starkscan.co/contract/${account}`;
@@ -60,7 +53,6 @@ function App() {
         salt: V2_SALT,
       });
 
-      console.log(result)
       setTxHash(result.transaction_hash.toString());
       setAccount(result.account);
       alert("Account deployed successfully");
@@ -182,8 +174,6 @@ function App() {
     });
     setOwner(num.toHex(nftowner));
   };
-
-
   const getNFTOwner = async () => {
     const nftowner = await tokenbound.getOwnerNFT(account as string);
     setNftOwner(num.toHex(nftowner[0]));
@@ -196,7 +186,6 @@ function App() {
  }, [account, deployStatus])
 
   useEffect(() => {
-    console.log(account, deployStatus, "status")
     if (account && deployStatus) {
       const getLockStatus = async () => {
         const isLocked = await tokenbound.isLocked({
@@ -231,8 +220,8 @@ function App() {
         tokenId: tokenId,
         salt: V2_SALT,
       });
-
-      setAccount(num.toHex(account));
+      
+      setAccount(num.toHexString(account));
     };
 
     const getDeploymentStatus = async () => {
@@ -250,10 +239,6 @@ function App() {
     getDeploymentStatus();
   }, [tokenContract]);
 
-
-  useEffect(() => {
-
-  }, [])
 
 
 
