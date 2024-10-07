@@ -24,20 +24,22 @@ function App() {
   const [timeUntilUnlocks, setTimeUntilUnlocks] = useState<string>();
 
   const walletClient: WalletClient = {
-    address:
-      "0x07da6cca38Afcf430ea53581F2eFD957bCeDfF798211309812181C555978DCC3",
+    address: "0x07da6cca38Afcf430ea53581F2eFD957bCeDfF798211309812181C555978DCC3",
     privateKey: process.env.REACT_APP_PRIVATE_KEY!,
   };
 
-  const registryAddress: string = "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
+  // const registryAddress: string = "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
 
-  const implementationAddress: string = "0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4";
+  const implementationAddress: string = "";
+  const registryAddress: string = "";
+  const V2_SALT = "240000000000"
+
+
+  // const implementationAddress: string = "0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4";
   const testPermissionedAddr: string = "0x05662997723d56add3da71a86105788cb29b4e4e55325c2cc61fb600ac975d80"
 
   const options = {
     walletClient: walletClient,
-    registryAddress: registryAddress,
-    implementationAddress: implementationAddress,
     chain_id: TBAChainID.sepolia,
     version: TBAVersion.V2,
     jsonRPC: `https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/${process.env.REACT_APP_ALCHEMY_API_KEY}`,
@@ -55,7 +57,7 @@ function App() {
       const result = await tokenbound.createAccount({
         tokenContract: tokenContract,
         tokenId: tokenId,
-        salt: "10000000000",
+        salt: V2_SALT,
       });
 
       console.log(result)
@@ -100,7 +102,7 @@ function App() {
         tbaAddress: account,
         contractAddress: ETH_CONTRACT,
         recipient,
-        amount: "150000000000000",
+        amount: "1000000000000000",
       });
 
       alert("Transfer was successfully");
@@ -172,10 +174,8 @@ function App() {
   };
 
 
-
-
-
-
+ useEffect(() => {
+ if(account && deployStatus){
   const getAccountOwner = async () => {
     const nftowner = await tokenbound.getOwner({
       tbaAddress: account,
@@ -190,9 +190,14 @@ function App() {
     setNftOwnerId(nftowner[1].toString());
   };
 
+  getAccountOwner()
+  getNFTOwner()
+ }
+ }, [account, deployStatus])
 
   useEffect(() => {
-    if (account.length > 0) {
+    console.log(account, deployStatus, "status")
+    if (account && deployStatus) {
       const getLockStatus = async () => {
         const isLocked = await tokenbound.isLocked({
           tbaAddress: account,
@@ -215,7 +220,7 @@ function App() {
       getLockStatus();
 
     };
-  }, [account, owner]);
+  }, [account, owner, deployStatus]);
 
 
 
@@ -224,18 +229,18 @@ function App() {
       const account = await tokenbound.getAccount({
         tokenContract: tokenContract,
         tokenId: tokenId,
-        salt: "9000000000",
+        salt: V2_SALT,
       });
 
       setAccount(num.toHex(account));
     };
+
     const getDeploymentStatus = async () => {
       const status = await tokenbound.checkAccountDeployment({
         tokenContract,
         tokenId,
-        salt: "10000000000",
+        salt: V2_SALT,
       });
-
 
       setDeployStatus(status?.deployed);
       setAccountClassHash(status?.classHash);
@@ -246,10 +251,12 @@ function App() {
   }, [tokenContract]);
 
 
-  if (deployStatus) {
-    getAccountOwner();
-    getNFTOwner();
-  }
+  useEffect(() => {
+
+  }, [])
+
+
+
 
   return (
     <div className="">

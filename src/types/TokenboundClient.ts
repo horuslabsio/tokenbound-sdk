@@ -5,8 +5,8 @@ export interface TokenboundClientOptions {
   walletClient?: WalletClient;
   account?: AccountInterface;
   jsonRPC: string;
-  registryAddress: string;
-  implementationAddress: string;
+  registryAddress?: string;
+  implementationAddress?: string;
   chain_id: string;
   version: string;
 }

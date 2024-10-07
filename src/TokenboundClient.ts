@@ -82,9 +82,8 @@ export class TokenboundClient {
     const { tokenContract, tokenId, salt } = params;
     const provider = getProvider(this.jsonRPC);
 
-    console.log(this.version)
-
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
+
 
     try {
       const payload = [
@@ -137,6 +136,8 @@ export class TokenboundClient {
     const { tokenContract, tokenId, salt } = params;
     const provider = getProvider(this.jsonRPC);
 
+    console.log(this.account)
+
     let salt_arg = salt ? salt : tokenId;
     let address = await this.getAccount({
       tokenContract,
@@ -157,7 +158,7 @@ export class TokenboundClient {
     const provider = getProvider(this.jsonRPC);
     let call: MultiCall = {
       contractAddress: tbaAddress,
-      entrypoint: "execute",
+      entrypoint: this.supportsV3 ? "execute" : "__execute__",
       calldata: CallData.compile({
         calls,
       }),
@@ -175,6 +176,7 @@ export class TokenboundClient {
   public async getOwner(options: GetOwnerOptions) {
     let { tbaAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    console.log(contract, 'jhhhhhj')
     try {
       let owner = await contract.owner();
       return owner;
@@ -267,6 +269,7 @@ export class TokenboundClient {
   public async isLocked(options: GetIsLockedOptions) {
     let { tbaAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
+    console.log(tbaAddress, contract, "v2")
     try {
       return await contract.is_locked();
     } catch (error) {
