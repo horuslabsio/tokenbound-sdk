@@ -7,7 +7,7 @@ import {
   Call,
   TBAChainID,
   TBAVersion
-} from "starknet-tokenbound-sdk-v3";
+} from "starknet-tokenbound-sdk";
 import FormatAddress from "./Address";
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
   const [permissionStatus, setPermissionStatus] = useState<boolean | null>();
   const [timeUntilUnlocks, setTimeUntilUnlocks] = useState<string>();
 
+  // replace with your address and priv key
   const walletClient: WalletClient = {
     address: "0x07da6cca38Afcf430ea53581F2eFD957bCeDfF798211309812181C555978DCC3",
     privateKey: process.env.REACT_APP_PRIVATE_KEY!,
@@ -30,18 +31,20 @@ function App() {
 
   const V2_SALT = "240000000000"
 
-  const testPermissionedAddr: string = "0x05662997723d56add3da71a86105788cb29b4e4e55325c2cc61fb600ac975d80"
+  // replace with your own permissioned address
+  const testPermissionedAddr: string = "0x04F1A720BC8D441139B9C27dff5Be5a740b310c8425abAC8da72C0609014E933"
 
   const options = {
     walletClient: walletClient,
     chain_id: TBAChainID.sepolia,
     version: TBAVersion.V3,
-    jsonRPC: `https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/${process.env.REACT_APP_ALCHEMY_API_KEY}`,
+    jsonRPC: "https://free-rpc.nethermind.io/sepolia-juno/v0_7",
   };
   const tokenbound = new TokenboundClient(options);
 
-  const tokenContract = "0x004dca9ec1ed78ce5cddbbcec63d3620514ae66bc73a3942d48a011bad452ffe";
-  const tokenId = "2";
+  // replace with your test NFT
+  const tokenContract = "0x0000003697660a0981d734780731949ecb2b4a38d6a58fc41629ed611e8defda";
+  const tokenId = "50";
   const url = `https://sepolia.starkscan.co/contract/${account}`;
 
 
@@ -64,53 +67,56 @@ function App() {
 
   const execute = async () => {
     const call1: Call = {
-      to: "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300",
+      to: "0x0388e9b2e37467b2b708ee930827177b42500f9b0e461fa3a059397dcf5a2e47",
       selector:
-        "0x7a44dde9fea32737a5cf3f9683b3235138654aa2d189f6fe44af37a61dc60d",
-      calldata: [],
+        "0x362398bec32bc0ebb411203221a35a0301193a96f317ebe5e40be9f60d15320",
+      calldata: [10],
     };
     const call2: Call = {
-      to: "0x077e0925380d1529772ee99caefa8cd7a7017a823ec3db7c003e56ad2e85e300",
+      to: "0x0388e9b2e37467b2b708ee930827177b42500f9b0e461fa3a059397dcf5a2e47",
       selector:
-        "0x03a0b04fad2d45d81641f40c55ee13e701dacd4a99cbf4d6ed1e231d717b3e4e",
-      calldata: [],
+        "0x362398bec32bc0ebb411203221a35a0301193a96f317ebe5e40be9f60d15320",
+      calldata: [20],
     };
     try {
       await tokenbound.execute(account as string, [call1, call2]);
+      alert("txn executed successfully!");
     } catch (error) {
       console.log(error);
     }
   };
 
+  // transfer ETH to your tokenbound account and replace here
   const transferERC20 = async () => {
     const ETH_CONTRACT =
       "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
     const recipient =
-      "0x07da6cca38Afcf430ea53581F2eFD957bCeDfF798211309812181C555978DCC3";
+      "0x02d904Aedff382C0D68F22444B525146ec5eA2926e271fC411845e8D9E751DE1";
 
     try {
       await tokenbound.transferERC20({
         tbaAddress: account,
         contractAddress: ETH_CONTRACT,
         recipient,
-        amount: "1000000000000000",
+        amount: "10000000000000",
       });
 
-      alert("Transfer was successfully");
+      alert("Transfer was successful");
     } catch (error) {
       console.log(error);
     }
   };
 
+  // transfer an NFT to your tokenbound account and replace here
   const transferNFT = async () => {
     const NFT_CONTRACT =
-      "0x0604ad6c09792f7bed48433d72dede4e0338c777332722930fda8aa7e8633dce";
+      "0x035b9aa824b897d9327ccde535e142ba36c8afc4d13f1ab00390b476b919fa58";
 
-    const TOKEN_ID = "4";
+    const TOKEN_ID = "197";
 
     const recipient =
-      "0x05662997723d56add3da71a86105788cb29b4e4e55325c2cc61fb600ac975d80";
+      "0x02d904Aedff382C0D68F22444B525146ec5eA2926e271fC411845e8D9E751DE1";
 
     try {
       await tokenbound.transferNFT({
@@ -121,12 +127,13 @@ function App() {
         recipient,
       });
 
-      alert("Transfer was successfully");
+      alert("Transfer was successful");
     } catch (error) {
       console.log(error);
     }
   };
 
+  // replace with a valid timestamp
   const lockAccount = async () => {
     try {
       await tokenbound.lock({
@@ -139,10 +146,11 @@ function App() {
     }
   };
 
+  // upgrades (or less) downgrades to V2
   const upgradeAccount = async () => {
     try {
       await tokenbound.upgrade({
-        newClassHash: "",
+        newClassHash: "0x45d67b8590561c9b54e14dd309c9f38c4e2c554dd59414021f9d079811621bd",
         tbaAddress: account
       });
       alert("Account was upgraded successfully");
