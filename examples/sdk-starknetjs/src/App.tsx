@@ -7,7 +7,7 @@ import {
   Call,
   TBAChainID,
   TBAVersion
-} from "starknet-tokenbound-sdk-v3";
+} from "starknet-tokenbound-sdk";
 import FormatAddress from "./Address";
 
 function App() {
@@ -210,7 +210,6 @@ function App() {
 
     };
   }, [account, owner, deployStatus]);
-
 
 
   useEffect(() => {

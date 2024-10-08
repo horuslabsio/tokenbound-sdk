@@ -81,7 +81,6 @@ export class TokenboundClient {
 
     const { tokenContract, tokenId, salt } = params;
     const provider = getProvider(this.jsonRPC);
-
     const contract = new Contract(this.registryAbi, this.registryAddress, provider);
     console.log(this.version)
 

@@ -1692,10 +1692,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@parcel/watcher-darwin-arm64@2.3.0":
+"@parcel/watcher-darwin-x64@2.3.0":
   version "2.3.0"
-  resolved "https://registry.npmjs.org/@parcel/watcher-darwin-arm64/-/watcher-darwin-arm64-2.3.0.tgz"
-  integrity sha512-mKY+oijI4ahBMc/GygVGvEdOq0L4DxhYgwQqYAz/7yPzuGi79oXrZG52WdpGA1wLBPrYb0T8uBaGFo7I6rvSKw==
+  resolved "https://registry.npmjs.org/@parcel/watcher-darwin-x64/-/watcher-darwin-x64-2.3.0.tgz"
+  integrity sha512-20oBj8LcEOnLE3mgpy6zuOq8AplPu9NcSSSfyVKgfOhNAc4eF4ob3ldj0xWjGGbOF7Dcy1Tvm6ytvgdjlfUeow==
 
 "@parcel/watcher-wasm@2.3.0":
   version "2.3.0"
@@ -9634,22 +9634,10 @@ standard-as-callback@^2.1.0:
   resolved "https://registry.npmjs.org/standard-as-callback/-/standard-as-callback-2.1.0.tgz"
   integrity sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==
 
-"starknet-tokenbound-sdk-v3@file:../..":
-  version "0.2.0"
-  resolved "file:../.."
-  dependencies:
-    "@testing-library/jest-dom" "^5.17.0"
-    "@testing-library/react" "^13.4.0"
-    "@testing-library/user-event" "^13.5.0"
-    react "^18.2.0"
-    react-dom "^18.2.0"
-    react-scripts "5.0.1"
-    web-vitals "^2.1.4"
-
-starknet-tokenbound-sdk@^0.1.34:
-  version "0.1.34"
-  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.1.34.tgz"
-  integrity sha512-RU3RGRzxuovYw1aLqKP9AUSAbDDEcFsH5f/9W7qzZv9lq7rU+NnQtdUrGUUis1L0fWszGMPmhgVUDghu7QH3EQ==
+starknet-tokenbound-sdk@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.2.1.tgz"
+  integrity sha512-Jl0wVIYHfXuXbt8dgakn0AATAJj0eOZoGu4R2bH27D0Yilx8FAsY8w9UHOij8JIuPNr0/nTR+H171O8uahGrPg==
   dependencies:
     "@testing-library/jest-dom" "^5.17.0"
     "@testing-library/react" "^13.4.0"

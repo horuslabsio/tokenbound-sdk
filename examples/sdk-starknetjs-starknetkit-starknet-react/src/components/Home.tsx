@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, version } from "react";
 import { num } from "starknet";
-import { TokenboundClient, Call } from "starknet-tokenbound-sdk";
+import { TokenboundClient, Call, TBAVersion, TBAChainID } from "starknet-tokenbound-sdk";
 import { useAccount, useConnect } from "@starknet-react/core";
 
 function Home() {
@@ -14,15 +14,11 @@ function Home() {
   const { connect, connectors } = useConnect();
   const { account } = useAccount();
 
-  const registryAddress: string =
-    "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
-  const implementationAddress: string =
-    "0x7396dc2e3ac3b50eac9b12447d7dcc2cfddef27405c680d46d6b13dae90d804";
 
   const options = {
     account: account,
-    registryAddress: registryAddress,
-    implementationAddress: implementationAddress,
+    version: TBAVersion.V3,
+    chain_id: TBAChainID.sepolia,
     jsonRPC: `https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/${process.env.REACT_APP_ALCHEMY_API_KEY}`,
   };
 
@@ -30,6 +26,8 @@ function Home() {
   if (account) {
     tokenbound = new TokenboundClient(options);
   }
+
+
 
   const tokenContract =
     "0x03d03d5e61a1aec784dc03ad63a40d2cfdc506f6168dfa7dc694a3e6dd95219e";
@@ -45,7 +43,6 @@ function Home() {
         tokenContract: tokenContract,
         tokenId: tokenId,
         salt: "3000000000",
-        chain_id: "SN_SEPOLIA".toString(),
       });
     } catch (error) {
       console.log(error);
@@ -73,26 +70,35 @@ function Home() {
     }
   };
 
-  // get tokenbound account
-  const getAccount = async () => {
-    const account = await tokenbound.getAccount({
-      tokenContract: tokenContract,
-      tokenId: tokenId,
-    });
-    setTBAAccount(num.toHex(account));
-  };
 
-  // get deployment status
-  const getDeploymentStatus = async () => {
-    const status = await tokenbound.checkAccountDeployment({
-      tokenContract,
-      tokenId,
-      salt: "3000000000",
-      chain_id: "SN_SEPOLIA".toString(),
-    });
-    setDeployStatus(status?.deployed);
-    setAccountClassHash(status?.classHash);
-  };
+
+  useEffect(() => {
+
+    // get tokenbound account
+    const getAccount = async () => {
+      const account = await tokenbound.getAccount({
+        tokenContract: tokenContract,
+        tokenId: tokenId,
+      });
+      setTBAAccount(num.toHex(account));
+    };
+
+    // get deployment status
+    const getDeploymentStatus = async () => {
+      const status = await tokenbound.checkAccountDeployment({
+        tokenContract,
+        tokenId,
+        salt: "3000000000",
+      });
+      setDeployStatus(status?.deployed);
+      setAccountClassHash(status?.classHash);
+    };
+
+    if (tokenbound) {
+      getAccount()
+      getDeploymentStatus()
+    }
+  }, [tokenbound])
 
   // get account owner
   const getAccountOwner = async () => {
@@ -111,17 +117,13 @@ function Home() {
     setNftOwnerId(nftowner[1].toString());
   };
 
-  // check account variable is set before trying to call SDK methods
-  if (account) {
-    getAccount();
-    getDeploymentStatus();
-  }
 
-  // check if deploy status is true before getting owners
-  if (deployStatus) {
-    getAccountOwner();
-    getNFTOwner();
-  }
+  useEffect(() => {
+    if (account && deployStatus) {
+      getAccountOwner()
+      getNFTOwner()
+    }
+  }, [account, deployStatus])
 
   return (
     <div className="App">
