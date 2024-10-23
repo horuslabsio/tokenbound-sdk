@@ -40,8 +40,8 @@ function App() {
   };
   const tokenbound = new TokenboundClient(options);
 
-  const tokenContract = "0x004dca9ec1ed78ce5cddbbcec63d3620514ae66bc73a3942d48a011bad452ffe";
-  const tokenId = "2";
+  const tokenContract = "0x004dca9ec1ed78ce5cddbbcec63d3620514ae66bc73a3942d48a011bad452ff";
+  const tokenId = "90";
   const url = `https://sepolia.starkscan.co/contract/${account}`;
 
 
@@ -221,6 +221,8 @@ function App() {
       });
       
       setAccount(num.toHexString(account));
+
+      console.log(account, "account")
     };
 
     const getDeploymentStatus = async () => {
