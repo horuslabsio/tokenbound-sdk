@@ -102,6 +102,9 @@ export class TokenboundClient {
     }
   }
 
+
+  
+
   public async createAccount(
     { tokenContract, tokenId, salt }: CreateAccountOptions
   ): Promise<AccountResult> {
@@ -287,7 +290,7 @@ export class TokenboundClient {
     let { tbaAddress, newClassHash } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
-      if (!this.supportsV3) return null
+      if (this.supportsV3) return null
       return await contract.upgrade(newClassHash);
     } catch (error) {
       throw error;
