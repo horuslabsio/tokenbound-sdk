@@ -8821,10 +8821,29 @@ stackframe@^1.3.4:
   resolved "https://registry.npmjs.org/stackframe/-/stackframe-1.3.4.tgz"
   integrity sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==
 
+<<<<<<< HEAD
 starknet-tokenbound-sdk@^0.2.1:
   version "0.2.1"
   resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.2.1.tgz"
   integrity sha512-Jl0wVIYHfXuXbt8dgakn0AATAJj0eOZoGu4R2bH27D0Yilx8FAsY8w9UHOij8JIuPNr0/nTR+H171O8uahGrPg==
+=======
+"starknet-tokenbound-sdk-v3@file:../..":
+  version "0.2.0"
+  resolved "file:../.."
+  dependencies:
+    "@testing-library/jest-dom" "^5.17.0"
+    "@testing-library/react" "^13.4.0"
+    "@testing-library/user-event" "^13.5.0"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+    react-scripts "5.0.1"
+    web-vitals "^2.1.4"
+
+starknet-tokenbound-sdk@^0.1.34:
+  version "0.1.34"
+  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.1.34.tgz"
+  integrity sha512-RU3RGRzxuovYw1aLqKP9AUSAbDDEcFsH5f/9W7qzZv9lq7rU+NnQtdUrGUUis1L0fWszGMPmhgVUDghu7QH3EQ==
+>>>>>>> 5b16aae1d86f69b2c47bbf2cc1c98303a5923b08
   dependencies:
     "@testing-library/jest-dom" "^5.17.0"
     "@testing-library/react" "^13.4.0"
