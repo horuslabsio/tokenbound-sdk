@@ -180,7 +180,7 @@ export class TokenboundClient {
     try {
       const result = await this.account.execute(call);
       await provider.waitForTransaction(result.transaction_hash);
-      return true;
+      return {transaction_hash: result.transaction_hash, status: true}
     } catch (error) {
       throw error;
     }
@@ -302,7 +302,6 @@ export class TokenboundClient {
     let { tbaAddress, newClassHash } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
     try {
-      if (!this.supportsV3) return null;
       return await contract.upgrade(newClassHash);
     } catch (error) {
       throw error;
