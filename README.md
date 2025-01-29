@@ -7,7 +7,7 @@
 
 <!-- primary badges -->
 <p align="center">
-  <a href="https://github.com/horuslabsio/TBA-SDK/LICENSE/">
+  <a href="https://github.com/horuslabsio/tokenbound-sdk/blob/develop/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-black">
   </a>
 </p>
