@@ -9822,10 +9822,10 @@ standard-as-callback@^2.1.0:
   resolved "https://registry.npmjs.org/standard-as-callback/-/standard-as-callback-2.1.0.tgz"
   integrity sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==
 
-starknet-tokenbound-sdk@^0.3.6:
-  version "0.3.6"
-  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.3.6.tgz"
-  integrity sha512-wVh60586aIGbegyhcK50XWL+wY495ro6quhNRUPSEImpMyfpubdn9g8Kt0m1I/qI3Mkayg12vjgAW0bEuc7YlQ==
+starknet-tokenbound-sdk@0.4.0-next.0:
+  version "0.4.0-next.0"
+  resolved "https://registry.npmjs.org/starknet-tokenbound-sdk/-/starknet-tokenbound-sdk-0.4.0-next.0.tgz"
+  integrity sha512-HMdksGZr+2+go17ENsv+n9NTx0W+Bv5+uVjiES0zUIvZnsEMbCdSxTge1iU0sa1V5xI5j/WUyjo1TeJ7dMjmOQ==
   dependencies:
     "@testing-library/jest-dom" "^5.17.0"
     "@testing-library/react" "^13.4.0"
