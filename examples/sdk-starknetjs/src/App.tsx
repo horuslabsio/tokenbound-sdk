@@ -25,7 +25,7 @@ function App() {
   // replace with your address and priv key
   const walletClient: WalletClient = {
     address:
-      "0x07da6cca38Afcf430ea53581F2eFD957bCeDfF798211309812181C555978DCC3",
+      "0x02d904Aedff382C0D68F22444B525146ec5eA2926e271fC411845e8D9E751DE1",
     privateKey: process.env.REACT_APP_PRIVATE_KEY!,
   };
 
@@ -36,11 +36,9 @@ function App() {
     "0x04F1A720BC8D441139B9C27dff5Be5a740b310c8425abAC8da72C0609014E933";
 
     const registryAddress: string =
-    "0x23a6d289a1e5067d905e195056c322381a78a3bc9ab3b0480f542fad87cc580";
+    "0x41f87c7b00c3fb50cc7744f896f2d3438414be33912bd24f17318c9f48523a1";
   const implementationAddress: string =
-    "0x7396dc2e3ac3b50eac9b12447d7dcc2cfddef27405c680d46d6b13dae90d804";
-
-
+    "0x29d2a1b11dd97289e18042502f11356133a2201dd19e716813fb01fbee9e9a4";
 
   const options = {
     walletClient: walletClient,
@@ -51,13 +49,12 @@ function App() {
     jsonRPC: "https://free-rpc.nethermind.io/sepolia-juno/v0_7",
   };
 
-
   const tokenbound = new TokenboundClient(options);
 
   // replace with your test NFT
   const tokenContract =
     "0x0000003697660a0981d734780731949ecb2b4a38d6a58fc41629ed611e8defda";
-  const tokenId = "50";
+  const tokenId = "2526";
   const url = `https://sepolia.starkscan.co/contract/${account}`;
 
   const deployAccount = async () => {
@@ -92,6 +89,29 @@ function App() {
     };
     try {
       await tokenbound.execute(account as string, [call1, call2]);
+      alert("txn executed successfully!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const executeByProxy = async () => {
+    const call1: Call = {
+      to: "0x0388e9b2e37467b2b708ee930827177b42500f9b0e461fa3a059397dcf5a2e47",
+      selector:
+        "0x362398bec32bc0ebb411203221a35a0301193a96f317ebe5e40be9f60d15320",
+      calldata: [10],
+    };
+    const call2: Call = {
+      to: "0x0388e9b2e37467b2b708ee930827177b42500f9b0e461fa3a059397dcf5a2e47",
+      selector:
+        "0x362398bec32bc0ebb411203221a35a0301193a96f317ebe5e40be9f60d15320",
+      calldata: [20],
+    };
+
+    const proxyAddress = "0x6b4920765fec19419c6e93ae1ac43d45d2ba397ec4d0f15579cf71dd8d8d460";
+    try {
+      await tokenbound.executeByProxy(account as string, proxyAddress, [call1, call2]);
       alert("txn executed successfully!");
     } catch (error) {
       console.log(error);
@@ -319,6 +339,13 @@ function App() {
           >
             execute txn
           </button>
+          <button
+            onClick={executeByProxy}
+            className="bg-green-400 text-medium  rounded-lg px-2 mr-5 py-2"
+          >
+            execute by proxy
+          </button>
+
           <button
             onClick={transferERC20}
             className="bg-blue-800 text-medium  rounded-lg px-2 mr-5 py-2"

@@ -186,6 +186,24 @@ export class TokenboundClient {
     }
   }
 
+  // @dev proxyAddress should have permissions to execute txns from the tokenbound
+  public async executeByProxy(tbaAddress: string, proxyAddress: string, calls: Call[]) {
+    const provider = getProvider(this.jsonRPC);
+    let call: MultiCall = {
+      contractAddress: proxyAddress,
+      entrypoint: "execute",
+      calldata: CallData.compile({ tbaAddress, calls }),
+    };
+
+    try {
+      const result = await this.account.execute(call);
+      await provider.waitForTransaction(result.transaction_hash);
+      return {transaction_hash: result.transaction_hash, status: true}
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async getOwner(options: GetOwnerOptions) {
     let { tbaAddress } = options;
     const contract = new Contract(this.accountAbi, tbaAddress, this.account);
