@@ -169,9 +169,27 @@ export class TokenboundClient {
     }
   }
 
+  // public async execute(tbaAddress: string, calls: Call[]) {
+  //   const provider = getProvider(this.jsonRPC);
+  //   let call: MultiCall = {
+  //     contractAddress: tbaAddress,
+  //     entrypoint: this.supportsV3 ? "execute" : "__execute__",
+  //     calldata: CallData.compile({ calls }),
+  //   };
+
+  //   try {
+  //     const result = await this.account.execute(call);
+  //     await provider.waitForTransaction(result.transaction_hash);
+  //     return {transaction_hash: result.transaction_hash, status: true}
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
   public async execute(tbaAddress: string, calls: Call[]) {
     const provider = getProvider(this.jsonRPC);
-    let call: MultiCall = {
+
+    const call: MultiCall = {
       contractAddress: tbaAddress,
       entrypoint: this.supportsV3 ? "execute" : "__execute__",
       calldata: CallData.compile({ calls }),
@@ -179,10 +197,40 @@ export class TokenboundClient {
 
     try {
       const result = await this.account.execute(call);
-      await provider.waitForTransaction(result.transaction_hash);
-      return {transaction_hash: result.transaction_hash, status: true}
+      const receipt = await provider.waitForTransaction(
+        result.transaction_hash
+      );
+
+      console.log(result, "result")
+
+      // Check finality and status safely
+      const status =
+        (receipt as any)?.status ||
+        (receipt as any)?.execution_status ||
+        "UNKNOWN";
+      const finality = (receipt as any)?.finality_status;
+      const reason = (receipt as any)?.revert_reason;
+
+      if (
+        status === "REJECTED" ||
+        status === "REVERTED" ||
+        finality === "REJECTED"
+      ) {
+        throw new Error(
+          `Transaction failed. Status: ${status}, Reason: ${reason || "Unknown"}`
+        );
+      }
+
+      return {
+        transaction_hash: result.transaction_hash,
+        status: true,
+      };
     } catch (error) {
-      throw error;
+      throw new Error(
+        typeof error === "string"
+          ? error
+          : (error as Error).message || "Execution failed"
+      );
     }
   }
 

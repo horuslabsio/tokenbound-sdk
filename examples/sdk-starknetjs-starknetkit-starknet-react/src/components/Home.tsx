@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { num } from "starknet";
-import { TokenboundClient, Call, TBAVersion, TBAChainID } from "starknet-tokenbound-sdk";
+import {
+  TokenboundClient,
+  Call,
+  TBAVersion,
+  TBAChainID,
+} from "starknet-tokenbound-sdk";
 import { useAccount, useConnect } from "@starknet-react/core";
 import FormatAddress from "./Address";
 import { disconnect } from "starknetkit";
@@ -46,7 +51,7 @@ function Home() {
       const client = new TokenboundClient(options);
       setTokenbound(client);
     }
-  }, [account])
+  }, [account]);
 
   const tokenContract =
     "0x0000003697660a0981d734780731949ecb2b4a38d6a58fc41629ed611e8defda";
@@ -79,6 +84,7 @@ function Home() {
         "0x362398bec32bc0ebb411203221a35a0301193a96f317ebe5e40be9f60d15320",
       calldata: [10],
     };
+
     const call2: Call = {
       to: "0x0388e9b2e37467b2b708ee930827177b42500f9b0e461fa3a059397dcf5a2e47",
       selector:
@@ -158,7 +164,7 @@ function Home() {
     try {
       await tokenbound?.upgrade({
         newClassHash:
-          "0x45d67b8590561c9b54e14dd309c9f38c4e2c554dd59414021f9d079811621bd",
+          "0xbe8863311f24317dff8af16deb1285ec5b035e57cf9beda545c341c339b925",
         tbaAddress: tbaAccount ?? "",
       });
       alert("Account was upgraded successfully");
@@ -180,7 +186,6 @@ function Home() {
     }
   };
 
-
   useEffect(() => {
     if (tbaAccount && deployStatus) {
       const getAccountOwner = async () => {
@@ -189,6 +194,7 @@ function Home() {
         });
         setOwner(num.toHex(nftowner));
       };
+
       const getNFTOwner = async () => {
         const nftowner = await tokenbound?.getOwnerNFT(tbaAccount as string);
         setNftOwner(num.toHex(nftowner[0]));
@@ -200,8 +206,6 @@ function Home() {
     }
   }, [tbaAccount, deployStatus]);
 
-
-
   useEffect(() => {
     if (tbaAccount && deployStatus) {
       const getLockStatus = async () => {
@@ -211,6 +215,7 @@ function Home() {
         setLockStatus(Boolean(isLocked[0]));
         setTimeUntilUnlocks(isLocked[1].toString());
       };
+
       const getAccountPermissions = async () => {
         const permission = await tokenbound?.getPermission({
           tbaAddress: tbaAccount,
@@ -228,7 +233,6 @@ function Home() {
   }, [tbaAccount, owner, deployStatus]);
 
   useEffect(() => {
-
     const getAccount = async () => {
       const account = await tokenbound?.getAccount({
         tokenContract: tokenContract,
@@ -254,36 +258,32 @@ function Home() {
     getDeploymentStatus();
   }, [tokenContract]);
 
-
-
   return (
     <div className="">
       <section className="App-header py-10">
-
         <h1 className="my-2 text-gray-300">Testing Tokenbound SDK</h1>
 
         <div>
-          {
-          !address && connectors.map((connector) => (
+          {!address &&
+            connectors.map((connector) => (
+              <button
+                key={connector.id}
+                className="bg-blue-400 rounded-md px-2 mr-5 py-2"
+                onClick={() => connect({ connector })}
+              >
+                Connect {connector.id}
+              </button>
+            ))}
+
+          {account && (
             <button
-              key={connector.id}
               className="bg-blue-400 rounded-md px-2 mr-5 py-2"
-              onClick={() => connect({ connector })}
-            >
-              Connect {connector.id}
-
-            </button>
-          ))}
-
-          {
-            account && <button
-              className="bg-blue-400 rounded-md px-2 mr-5 py-2"
-              onClick={ async () =>  await disconnect()}
+              onClick={async () => await disconnect()}
             >
               <FormatAddress address={address} />
               Disconnect
             </button>
-          }
+          )}
         </div>
         <br />
         <div className="space-y-4 py-10">
