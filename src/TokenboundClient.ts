@@ -169,27 +169,9 @@ export class TokenboundClient {
     }
   }
 
-  // public async execute(tbaAddress: string, calls: Call[]) {
-  //   const provider = getProvider(this.jsonRPC);
-  //   let call: MultiCall = {
-  //     contractAddress: tbaAddress,
-  //     entrypoint: this.supportsV3 ? "execute" : "__execute__",
-  //     calldata: CallData.compile({ calls }),
-  //   };
-
-  //   try {
-  //     const result = await this.account.execute(call);
-  //     await provider.waitForTransaction(result.transaction_hash);
-  //     return {transaction_hash: result.transaction_hash, status: true}
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   public async execute(tbaAddress: string, calls: Call[]) {
     const provider = getProvider(this.jsonRPC);
-
-    const call: MultiCall = {
+    let call: MultiCall = {
       contractAddress: tbaAddress,
       entrypoint: this.supportsV3 ? "execute" : "__execute__",
       calldata: CallData.compile({ calls }),
@@ -197,13 +179,30 @@ export class TokenboundClient {
 
     try {
       const result = await this.account.execute(call);
+      await provider.waitForTransaction(result.transaction_hash);
+      return {transaction_hash: result.transaction_hash, status: true}
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // @dev proxyAddress should have permissions to execute txns from the tokenbound
+  public async executeByProxy(
+    tbaAddress: string,
+    proxyAddress: string,
+    calls: Call[]
+  ) {
+    const provider = getProvider(this.jsonRPC);
+    let call: MultiCall = {
+      contractAddress: proxyAddress,
+      entrypoint: "execute",
+      calldata: CallData.compile({ tbaAddress, calls }),
+    };
+    try {
+      const result = await this.account.execute(call);
       const receipt = await provider.waitForTransaction(
         result.transaction_hash
       );
-
-      console.log(result, "result")
-
-      // Check finality and status safely
       const status =
         (receipt as any)?.status ||
         (receipt as any)?.execution_status ||
@@ -220,17 +219,12 @@ export class TokenboundClient {
           `Transaction failed. Status: ${status}, Reason: ${reason || "Unknown"}`
         );
       }
-
       return {
         transaction_hash: result.transaction_hash,
         status: true,
       };
     } catch (error) {
-      throw new Error(
-        typeof error === "string"
-          ? error
-          : (error as Error).message || "Execution failed"
-      );
+      throw error;
     }
   }
 
