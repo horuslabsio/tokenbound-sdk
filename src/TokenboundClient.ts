@@ -180,7 +180,7 @@ export class TokenboundClient {
     try {
       const result = await this.account.execute(call);
       await provider.waitForTransaction(result.transaction_hash);
-      return {transaction_hash: result.transaction_hash, status: true}
+      return { transaction_hash: result.transaction_hash, status: true };
     } catch (error) {
       throw error;
     }
