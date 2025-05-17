@@ -180,25 +180,49 @@ export class TokenboundClient {
     try {
       const result = await this.account.execute(call);
       await provider.waitForTransaction(result.transaction_hash);
-      return {transaction_hash: result.transaction_hash, status: true}
+      return { transaction_hash: result.transaction_hash, status: true };
     } catch (error) {
       throw error;
     }
   }
 
   // @dev proxyAddress should have permissions to execute txns from the tokenbound
-  public async executeByProxy(tbaAddress: string, proxyAddress: string, calls: Call[]) {
+  public async executeByProxy(
+    tbaAddress: string,
+    proxyAddress: string,
+    calls: Call[]
+  ) {
     const provider = getProvider(this.jsonRPC);
     let call: MultiCall = {
       contractAddress: proxyAddress,
       entrypoint: "execute",
       calldata: CallData.compile({ tbaAddress, calls }),
     };
-
     try {
       const result = await this.account.execute(call);
-      await provider.waitForTransaction(result.transaction_hash);
-      return {transaction_hash: result.transaction_hash, status: true}
+      const receipt = await provider.waitForTransaction(
+        result.transaction_hash
+      );
+      const status =
+        (receipt as any)?.status ||
+        (receipt as any)?.execution_status ||
+        "UNKNOWN";
+      const finality = (receipt as any)?.finality_status;
+      const reason = (receipt as any)?.revert_reason;
+
+      if (
+        status === "REJECTED" ||
+        status === "REVERTED" ||
+        finality === "REJECTED"
+      ) {
+        throw new Error(
+          `Transaction failed. Status: ${status}, Reason: ${reason || "Unknown"}`
+        );
+      }
+      return {
+        transaction_hash: result.transaction_hash,
+        status: true,
+      };
     } catch (error) {
       throw error;
     }
